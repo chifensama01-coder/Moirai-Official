@@ -10,11 +10,32 @@ import { client, siteSettingsQuery } from '@/lib/sanity'
 export const metadata: Metadata = {
   title: 'Moirai. — Destiny, Tailored',
   description: 'Not a Trend. IDENTITY. Luxury bespoke fashion, corsets, cocktail dresses and Cameroonian traditional wear. The House of Moirai.',
-  keywords: 'bespoke fashion, Cameroon, couture, corsets, cocktail dresses, fashion school, Moirai',
+  keywords: 'bespoke fashion, Cameroon, couture, corsets, cocktail dresses, fashion school, Moirai, luxury wear, custom dresses',
   openGraph: {
     title: 'Moirai. — Destiny, Tailored',
     description: 'Not a Trend. IDENTITY. Luxury bespoke fashion crafted for who you are becoming.',
-    siteName: 'Moirai.',
+    url: 'https://moirai.com',
+    siteName: 'Moirai.th',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Moirai Luxury Fashion Bespoke Couture',
+      },
+    ],
+    locale: 'en_GB',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Moirai. — Destiny, Tailored',
+    description: 'Luxury bespoke fashion crafted for who you are becoming.',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 }
 

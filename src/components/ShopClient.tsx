@@ -4,10 +4,9 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
 
+import Image from 'next/image'
+
 const WA = '237682710405'
-
-const CATEGORIES = ['All', 'Bespoke', 'Corsets', 'Cocktail Dresses', 'Cameroonian Traditional']
-
 export default function ShopClient({ products }: { products: any[] }) {
   const [activeCategory, setActiveCategory] = useState('All')
   const [view, setView] = useState<'grid' | 'list'>('grid')
@@ -156,15 +155,18 @@ export default function ShopClient({ products }: { products: any[] }) {
                   >
                     <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden' }}>
                       {p.image ? (
-                        <motion.img
-                          src={p.image}
-                          alt={p.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          whileHover={{ scale: 1.07 }}
-                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        />
+                        <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.07 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+                          <Image
+                            src={p.image}
+                            alt={p.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 300px"
+                            style={{ objectFit: 'cover' }}
+                            loading="lazy"
+                          />
+                        </motion.div>
                       ) : (
-                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1e1826, #2D1B69)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
+                        <div style={{ width: '100%', height: '100%', background: '#1e1826', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
                       )}
                       {p.category && p.category !== 'Other' && (
                         <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', padding: '0.25rem 0.7rem', background: 'rgba(45,27,105,0.85)', border: '1px solid rgba(155,93,229,0.3)', fontSize: '8px', letterSpacing: '0.2em', color: '#C77DFF', textTransform: 'uppercase' }}>
@@ -221,15 +223,18 @@ export default function ShopClient({ products }: { products: any[] }) {
                     whileHover={{ paddingLeft: '1rem' }}
                     style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto', gap: '1.5rem', alignItems: 'center', borderBottom: '1px solid #2a2133', padding: '1.5rem 0', transition: 'padding 0.2s' }}
                   >
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg, #1e1826, #2D1B69)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #2a2133', overflow: 'hidden' }}>
+                    <div style={{ aspectRatio: '3/4', background: '#1e1826', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #2a2133', overflow: 'hidden', position: 'relative' }}>
                       {p.image ? (
-                        <motion.img
-                          src={p.image}
-                          alt={p.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          whileHover={{ scale: 1.08 }}
-                          transition={{ duration: 0.5 }}
-                        />
+                        <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.08 }} transition={{ duration: 0.5 }}>
+                          <Image
+                            src={p.image}
+                            alt={p.name}
+                            fill
+                            sizes="100px"
+                            style={{ objectFit: 'cover' }}
+                            loading="lazy"
+                          />
+                        </motion.div>
                       ) : (
                         <span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span>
                       )}

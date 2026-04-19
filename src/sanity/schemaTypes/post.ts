@@ -35,6 +35,12 @@ const post = {
             title: 'Published Date',
             type: 'datetime',
         },
+        {
+            name: 'gallery',
+            title: 'Gallery',
+            type: 'array',
+            of: [{ type: 'image', options: { hotspot: true } }]
+        },
     ],
 }
 

@@ -1,14 +1,9 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { fadeUp, fadeIn, staggerContainer, staggerFadeUp, scrollFadeUp, imageReveal } from '@/lib/animations'
-
-const CATEGORIES = [
-  { name: 'Bespoke', desc: 'Custom pieces crafted to reflect your identity', href: '/bespoke' },
-  { name: 'Corsets', desc: 'Structured silhouettes that command a room', href: '/collections' },
-  { name: 'Cocktail Dresses', desc: 'Effortless elegance for every occasion', href: '/collections' },
-  { name: 'Cameroonian Traditional', desc: 'Heritage reimagined in modern silhouettes', href: '/collections' },
-]
+import Image from 'next/image'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { fadeUp, fadeIn, staggerContainer, staggerFadeUp } from '@/lib/animations'
 
 const VALUES = [
   { icon: '◆', title: 'Customer Experience', desc: 'Every interaction is personal. You are not a transaction.' },
@@ -18,26 +13,48 @@ const VALUES = [
 ]
 
 interface HomeClientProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   posts: any[]
   waNumber: string
   waMsg: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  categories: any[]
+  collections: any[]
   heroImageUrl?: string
   heroText?: string
+  heroSlides?: any[]
+  lookbook?: any[]
 }
 
-export default function HomeClient({ products, posts, waNumber, waMsg, categories, heroImageUrl, heroText }: HomeClientProps) {
+export default function HomeClient({ products, posts, waNumber, waMsg, collections, heroImageUrl, heroText, heroSlides, lookbook }: HomeClientProps) {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  
+  const slides = (heroSlides && heroSlides.length > 0) ? heroSlides : [
+     {
+       image: heroImageUrl,
+       title: heroText || 'Destiny, Tailored.',
+       subtitle: 'Not a Trend. IDENTITY.'
+     }
+  ]
+  const renderSlides = slides.filter(s => s.image)
+
+  useEffect(() => {
+    if (renderSlides.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % renderSlides.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [renderSlides.length])
+
+  // Parallax
+  const { scrollYProgress } = useScroll()
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
+
   return (
     <>
       {/* ── HERO ── */}
       <section style={{
         minHeight: '100vh',
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
         position: 'relative',
         overflow: 'hidden',
         background: 'linear-gradient(170deg, #050407 0%, #0d0b10 40%, #130f18 100%)',
@@ -55,29 +72,27 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             animate="visible"
           >The House of Moirai</motion.p>
 
-          <motion.h1
-            custom={0.15}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3.5rem, 6vw, 7.5rem)',
-              fontWeight: 900,
-              letterSpacing: '0.04em',
-              lineHeight: 0.95,
-              marginBottom: '1.5rem',
-            }}
-          >
-            {heroText ? (
-              <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{heroText}</span>
-            ) : (
-              <>
-                <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Destiny,</span>
-                <span style={{ display: 'block', background: 'linear-gradient(135deg, #9B5DE5 0%, #E0AAFF 60%, #FAFAFA 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Tailored.</span>
-              </>
-            )}
-          </motion.h1>
+          <AnimatePresence mode="wait">
+            <motion.h1
+              key={`h1-${currentSlide}`}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(3rem, 5.5vw, 6rem)',
+                fontWeight: 900,
+                letterSpacing: '0.04em',
+                lineHeight: 0.95,
+                marginBottom: '1.5rem',
+              }}
+            >
+              <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                 {renderSlides[currentSlide]?.title}
+              </span>
+            </motion.h1>
+          </AnimatePresence>
 
           <motion.div
             custom={0.3}
@@ -88,15 +103,19 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             style={{ margin: '1.5rem 0' }}
           />
 
-          <motion.p
-            custom={0.38}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontStyle: 'italic', color: '#E0AAFF', marginBottom: '0.5rem' }}
-          >
-            Not a Trend. IDENTITY.
-          </motion.p>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={`p-${currentSlide}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontStyle: 'italic', color: '#E0AAFF', marginBottom: '0.5rem' }}
+            >
+              {renderSlides[currentSlide]?.subtitle}
+            </motion.p>
+          </AnimatePresence>
+
           <motion.p
             custom={0.44}
             variants={fadeUp}
@@ -115,18 +134,31 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}
           >
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link href="/collections" className="btn-primary">Explore Collections</Link>
+              <Link href="/collections" className="btn-primary" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Explore Collections</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" className="btn-ghost">Enquire Now</a>
+              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Enquire Now</a>
             </motion.div>
           </motion.div>
+          
+          {renderSlides.length > 1 && (
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '3rem' }}>
+              {renderSlides.map((_, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => setCurrentSlide(i)}
+                  style={{ width: '2rem', height: '3px', background: currentSlide === i ? '#9B5DE5' : '#2a2133', transition: 'background 0.3s', minHeight: '30px' }}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Right — purple gradient panel */}
+        {/* Right — parallax slider */}
         <motion.div
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
           style={{
             position: 'relative',
@@ -134,18 +166,21 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             background: 'linear-gradient(160deg, #1e1826 0%, #2D1B69 40%, #6B3FA0 100%)',
           }}
         >
-          {heroImageUrl && (
-            <img 
-              src={heroImageUrl} 
-              alt="Moirai Hero" 
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.45 }} 
-            />
-          )}
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3rem', opacity: 0.12, zIndex: 1 }}>
-            {['Moirai.', '✦', 'Destiny, Tailored.', '◆', 'The House of Moirai', '◇', 'Not a Trend.', '✧'].map((t, i) => (
-              <p key={i} style={{ fontFamily: i % 2 === 0 ? 'var(--font-display)' : 'inherit', fontSize: i === 0 ? '5rem' : i % 2 === 0 ? '1.2rem' : '2rem', letterSpacing: '0.2em', color: 'white', textAlign: 'center', fontWeight: 700 }}>{t}</p>
-            ))}
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              style={{ position: 'absolute', inset: 0 }}
+            >
+              <motion.div style={{ width: '100%', height: '100%', y: parallaxY }}>
+                 <Image src={renderSlides[currentSlide]?.image || renderSlides[currentSlide]?.url || ''} alt="Moirai Hero" fill sizes="50vw" priority style={{ objectFit: 'cover', opacity: 0.45 }} />
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #050407 0%, transparent 30%)' }} />
           {/* Large glowing orb */}
           <motion.div
@@ -170,7 +205,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
           />
         </motion.div>
 
-        <style>{`@media(max-width:900px){section:first-of-type{grid-template-columns:1fr!important}section:first-of-type>div:last-of-type{display:none!important}section:first-of-type>div:first-of-type{padding:7rem 1.5rem 4rem!important}}`}</style>
+        <style>{`@media(max-width:900px){section:first-of-type{grid-template-columns:1fr!important}section:first-of-type>div:last-of-type{position:absolute!important;inset:0!important;z-index:0!important;opacity:0.3!important}section:first-of-type>div:first-of-type{padding:7rem 1.5rem 4rem!important;z-index:10;min-height:100vh;background:linear-gradient(to top,#050407,transparent)}}`}</style>
       </section>
 
       {/* ── MARQUEE ── */}
@@ -208,7 +243,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             Moirai draws from the Greek Fates — the ancient weavers of human destiny. We believe every silhouette tells a story, every stitch carries intention. Fashion is not decoration. It is the language of becoming.
           </motion.p>
           <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
-            <Link href="/about" className="btn-ghost">Discover Our Story</Link>
+            <Link href="/about" className="btn-ghost" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Discover Our Story</Link>
           </motion.div>
         </motion.div>
       </section>
@@ -233,14 +268,14 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
           >
-            {categories && categories.length > 0 ? categories.map((cat, i) => (
+            {collections && collections.length > 0 ? collections.map((cat, i) => (
               <motion.div key={i} variants={staggerFadeUp}>
                 <motion.div
                   whileHover={{ scale: 1.02, borderColor: '#6B3FA0' }}
                   transition={{ duration: 0.3 }}
                   style={{ borderColor: '#2a2133' }}
                 >
-                  <Link href="/collections" style={{
+                  <Link href={`/collections#${cat.slug || cat.title.toLowerCase().replace(/ /g, '-')}`} style={{
                     display: 'block',
                     padding: '3rem 2rem',
                     background: '#130f18',
@@ -251,28 +286,63 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
                   }}>
                     {/* Image */}
                     <div style={{ width: '100%', aspectRatio: '4/3', marginBottom: '1.5rem', position: 'relative', overflow: 'hidden' }}>
-                      <motion.img
-                        src={cat.url}
-                        alt={cat.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        whileHover={{ scale: 1.06 }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      />
+                      {cat.image ? (
+                           <Image src={cat.image} alt={cat.title} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                      ) : (
+                           <div style={{ width: '100%', height: '100%', background: '#1e1826' }} />
+                      )}
                     </div>
                     <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', marginBottom: '0.5rem' }}>{cat.title}</p>
-                    {cat.desc && <p style={{ fontSize: '12px', color: '#7A6B8A', lineHeight: 1.7 }}>{cat.desc}</p>}
                     <p style={{ fontSize: '10px', color: '#9B5DE5', letterSpacing: '0.2em', marginTop: '1.25rem', textTransform: 'uppercase' }}>Explore →</p>
                   </Link>
                 </motion.div>
               </motion.div>
             )) : (
-               <div style={{ padding: '3rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', fontStyle: 'italic', border: '1px dashed #2a2133' }}>
-                 Collections coming soon.
+               <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', border: '1px dashed rgba(255,255,255,0.05)', background: 'rgba(13,11,16,0.3)' }}>
+                 <p style={{ fontSize: '1.5rem', opacity: 0.3, marginBottom: '0.5rem' }}>✧</p>
+                 <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Curating the Collection</p>
                </div>
             )}
           </motion.div>
         </div>
       </section>
+
+      {/* ── LOOKBOOK SECTION (NEW) ── */}
+      {lookbook && lookbook.length > 0 && (
+         <section className="section" style={{ background: '#050407', borderTop: '1px solid #2a2133' }}>
+            <div className="container">
+               <motion.div
+                  style={{ textAlign: 'center', marginBottom: '4rem' }}
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '-80px' }}
+                >
+                  <motion.p className="section-label" variants={staggerFadeUp}>Inspiration</motion.p>
+                  <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>The Lookbook</motion.h2>
+               </motion.div>
+               <motion.div 
+                 style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}
+                 variants={staggerContainer}
+                 initial="hidden"
+                 whileInView="visible"
+                 viewport={{ once: true, margin: '-60px' }}
+               >
+                 {lookbook.map((lb, idx) => (
+                    <motion.div key={idx} variants={staggerFadeUp} style={{ position: 'relative', height: '600px', overflow: 'hidden', border: '1px solid #2a2133' }}>
+                        <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.05 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
+                           <Image src={lb.image} alt={lb.title} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
+                           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,4,7,0.95) 0%, transparent 60%)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', textAlign: 'center' }}>
+                              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: '#F0EBF8', marginBottom: '0.5rem' }}>{lb.title}</h3>
+                              {lb.description && <p style={{ fontSize: '12px', color: '#B8A9C9', lineHeight: 1.7, maxWidth: '80%' }}>{lb.description}</p>}
+                           </div>
+                        </motion.div>
+                    </motion.div>
+                 ))}
+               </motion.div>
+            </div>
+         </section>
+      )}
 
       {/* ── FEATURED PRODUCTS (from Sanity) ── */}
       {products.length > 0 && (
@@ -290,7 +360,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>Featured Pieces</h2>
               </motion.div>
               <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/shop" className="btn-outline">View All</Link>
+                <Link href="/shop" className="btn-outline" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>View All</Link>
               </motion.div>
             </motion.div>
             <motion.div
@@ -300,9 +370,8 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
               whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
             >
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {products.map((p: any) => {
-                const msg = encodeURIComponent(p.whatsappMessage || `Hi! I'm interested in ${p.name} from Moirai.`)
+                const msg = encodeURIComponent(`Hi I want to order ${p.name || 'this item'}`)
                 return (
                   <motion.div key={p._id} variants={staggerFadeUp}>
                     <motion.div
@@ -312,28 +381,32 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
                     >
                       {p.imageUrl
                         ? (
-                          <motion.img
-                            src={p.imageUrl}
-                            alt={p.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            variants={{ rest: { scale: 1 }, hover: { scale: 1.06 } }}
-                            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                          />
+                          <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} variants={{ rest: { scale: 1 }, hover: { scale: 1.06 } }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+                             <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }} loading="lazy" />
+                             {/* Secondary Hover Image (if exists array bounds) */}
+                             {p.images && p.images[0] && (
+                                <motion.div variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                                   <Image src={p.images[0]} alt={`${p.name} alternate`} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                                </motion.div>
+                             )}
+                          </motion.div>
                         )
-                        : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1e1826, #2D1B69)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
+                        : <div style={{ width: '100%', height: '100%', background: '#1e1826', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
                       }
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,4,7,0.92) 0%, transparent 50%)', padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                        <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', marginBottom: '0.25rem' }}>{p.name}</p>
-                        {p.price && <p style={{ fontSize: '11px', color: '#C77DFF', marginBottom: '0.75rem' }}>{p.price}</p>}
-                        <motion.a
-                          href={`https://wa.me/${waNumber}?text=${msg}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ display: 'inline-block', padding: '0.45rem 1rem', border: '1px solid #9B5DE5', color: '#C77DFF', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', width: 'fit-content' }}
-                          whileHover={{ backgroundColor: 'rgba(107,63,160,0.3)', scale: 1.04 }}
-                          whileTap={{ scale: 0.97 }}
-                          transition={{ duration: 0.2 }}
-                        >Enquire</motion.a>
+                      <div style={{ position: 'absolute', inset: 0, background: p.imageUrl ? 'transparent' : 'linear-gradient(to top, rgba(5,4,7,0.92) 0%, transparent 50%)', padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', zIndex: 3 }}>
+                        <motion.div initial={{ opacity: 0 }} variants={{ hover: { opacity: 1, y: 0 }, rest: { opacity: 0, y: 10 } }} transition={{ duration: 0.2 }} style={{ background: 'rgba(13,11,16,0.95)', padding: '1rem', border: '1px solid #2a2133' }}>
+                          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', marginBottom: '0.25rem', color: '#F0EBF8' }}>{p.name}</p>
+                          {p.price && <p style={{ fontSize: '11px', color: '#C77DFF', marginBottom: '0.75rem' }}>{p.price}</p>}
+                          <motion.a
+                            href={`https://wa.me/237682710405?text=${msg}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'inline-block', padding: '0.45rem 1rem', border: '1px solid #9B5DE5', color: '#C77DFF', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', minHeight: '44px', lineHeight: '30px' }}
+                            whileHover={{ backgroundColor: 'rgba(107,63,160,0.3)', scale: 1.04 }}
+                            whileTap={{ scale: 0.97 }}
+                            transition={{ duration: 0.2 }}
+                          >Enquire</motion.a>
+                        </motion.div>
                       </div>
                     </motion.div>
                   </motion.div>
@@ -390,10 +463,10 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             </div>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/bespoke" className="btn-primary">Start Your Order</Link>
+                <Link href="/bespoke" className="btn-primary" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Start Your Order</Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <a href={`https://wa.me/${waNumber}?text=${encodeURIComponent('Hi! I am interested in a bespoke piece from Moirai.')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost">WhatsApp Us</a>
+                <a href={`https://wa.me/237682710405?text=${encodeURIComponent('Hi! I am interested in a bespoke piece from Moirai.')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>WhatsApp Us</a>
               </motion.div>
             </div>
           </motion.div>
@@ -418,7 +491,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
             Learn the art of craftsmanship. From foundational sewing techniques to advanced couture, our program is built for those who want to create — not just wear — the extraordinary.
           </motion.p>
           <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
-            <Link href="/fashion-school" className="btn-ghost">Explore the Program</Link>
+            <Link href="/fashion-school" className="btn-ghost" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Explore the Program</Link>
           </motion.div>
         </motion.div>
       </section>
@@ -459,56 +532,6 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
         </div>
       </section>
 
-      {/* ── JOURNAL PREVIEW ── */}
-      {posts.length > 0 && (
-        <section className="section" style={{ background: '#0d0b10', borderTop: '1px solid #2a2133' }}>
-          <div className="container" style={{ maxWidth: 900, margin: '0 auto' }}>
-            <motion.div
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-80px' }}
-            >
-              <motion.div variants={staggerFadeUp}>
-                <p className="section-label">Stories &amp; Style</p>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>The Journal</h2>
-              </motion.div>
-              <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/blog" className="btn-outline">All Posts</Link>
-              </motion.div>
-            </motion.div>
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {posts.map((post: any, i: number) => (
-              <motion.div
-                key={post._id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Link href={`/blog/${post.slug?.current}`} style={{ display: 'block' }}>
-                  <motion.article
-                    style={{ borderTop: '1px solid #2a2133', padding: '2.5rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}
-                    whileHover={{ paddingLeft: '1.25rem' }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <div>
-                      <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#9B5DE5', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                        {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
-                      </p>
-                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.2rem,2.5vw,1.6rem)', fontWeight: 400, color: '#F0EBF8', marginBottom: '0.5rem' }}>{post.title}</h3>
-                      {post.excerpt && <p style={{ color: '#7A6B8A', fontSize: '12px', lineHeight: 1.8 }}>{post.excerpt}</p>}
-                    </div>
-                    <span style={{ fontSize: '1.25rem', color: '#9B5DE5', flexShrink: 0 }}>→</span>
-                  </motion.article>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── FINAL CTA ── */}
       <section style={{ padding: '9rem 2rem', textAlign: 'center', background: 'linear-gradient(170deg, #130f18, #050407)', borderTop: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(107,63,160,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -532,10 +555,10 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categorie
           </motion.p>
           <motion.div variants={staggerFadeUp} style={{ display: 'flex', gap: '1.25rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link href="/bespoke" className="btn-primary">Start Your Journey</Link>
+              <Link href="/bespoke" className="btn-primary" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Start Your Journey</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" className="btn-ghost">Chat With Us</a>
+              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Chat With Us</a>
             </motion.div>
           </motion.div>
         </motion.div>

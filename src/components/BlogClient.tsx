@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
 import { urlFor } from '@/lib/sanity'
@@ -7,14 +8,27 @@ import { urlFor } from '@/lib/sanity'
 interface BlogClientProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   posts: any[]
+  blogHeroImage?: string | null
 }
 
-export default function BlogClient({ posts }: BlogClientProps) {
+export default function BlogClient({ posts, blogHeroImage }: BlogClientProps) {
   return (
     <div style={{ paddingTop: '5rem' }}>
       {/* Header */}
-      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: 'linear-gradient(170deg, #0d0b10, #1e1826)', borderBottom: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: '#0d0b10', borderBottom: '1px solid #2a2133', position: 'relative', overflow: 'hidden', minHeight: '40vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {blogHeroImage && (
+          <Image
+            src={blogHeroImage}
+            alt="Blog Hero"
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover', opacity: 0.3 }}
+            priority
+          />
+        )}
+        {!blogHeroImage && (
+           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        )}
         <motion.div
           style={{ position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -60,14 +74,14 @@ export default function BlogClient({ posts }: BlogClientProps) {
                       <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#9B5DE5', textTransform: 'uppercase', marginTop: '1rem' }}>Read More →</p>
                     </div>
                     {post.mainImage && (
-                      <div style={{ aspectRatio: '4/3', overflow: 'hidden', border: '1px solid #2a2133' }}>
-                        <motion.img
-                          src={urlFor(post.mainImage).url()}
-                          alt={post.title}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      <div style={{ aspectRatio: '4/3', overflow: 'hidden', border: '1px solid #2a2133', position: 'relative' }}>
+                        <motion.div
+                          style={{ width: '100%', height: '100%', position: 'relative' }}
                           whileHover={{ scale: 1.07 }}
                           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        />
+                        >
+                           <Image src={urlFor(post.mainImage).width(400).quality(80).url()} alt={post.title} fill sizes="200px" style={{ objectFit: 'cover' }} loading="lazy" />
+                        </motion.div>
                       </div>
                     )}
                   </motion.article>

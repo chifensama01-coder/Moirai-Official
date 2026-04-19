@@ -9,6 +9,7 @@ const LEFT_LINKS = [
   { href: '/bespoke', label: 'Bespoke' },
 ]
 const RIGHT_LINKS = [
+  { href: '/blog', label: 'Journal' },
   { href: '/fashion-school', label: 'Fashion School' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
@@ -16,7 +17,6 @@ const RIGHT_LINKS = [
 const ALL_LINKS = [
   ...LEFT_LINKS,
   ...RIGHT_LINKS,
-  { href: '/blog', label: 'Journal' },
 ]
 
 export default function Navbar() {
@@ -44,9 +44,9 @@ export default function Navbar() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: scrolled ? 'rgba(5,4,7,0.98)' : 'rgba(5,4,7,0.5)',
-          borderBottom: scrolled ? '1px solid #2a2133' : '1px solid transparent',
-          backdropFilter: 'blur(16px)',
+          background: scrolled ? 'rgba(5,4,7,0.75)' : 'rgba(5,4,7,0.5)',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
+          backdropFilter: 'blur(24px)',
           transition: 'background 0.4s ease, border-color 0.4s ease',
         }}
       >

@@ -29,6 +29,61 @@ const siteSettings = {
             type: 'image',
         },
         {
+            name: 'collectionsHeroImage',
+            title: 'Collections Hero Image',
+            type: 'image',
+        },
+        {
+            name: 'blogHeroImage',
+            title: 'Blog Hero Image',
+            type: 'image',
+        },
+        {
+            name: 'collections',
+            title: 'Collections Framework',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'title', title: 'Title', type: 'string' },
+                        { name: 'slug', title: 'Slug Identifier', type: 'string' },
+                        { name: 'image', title: 'Cover Image', type: 'image' },
+                    ],
+                },
+            ],
+        },
+        {
+            name: 'lookbook',
+            title: 'Lookbook Items',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'title', title: 'Title', type: 'string' },
+                        { name: 'description', title: 'Description', type: 'text' },
+                        { name: 'image', title: 'Image', type: 'image' },
+                    ],
+                },
+            ],
+        },
+        {
+            name: 'heroSlides',
+            title: 'Hero Slides',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'title', title: 'Title', type: 'string' },
+                        { name: 'subtitle', title: 'Subtitle', type: 'string' },
+                        { name: 'image', title: 'Background Image', type: 'image' },
+                    ],
+                },
+            ],
+        },
+        {
             name: 'categories',
             title: 'Categories',
             type: 'array',

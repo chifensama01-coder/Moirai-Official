@@ -15,6 +15,12 @@ const product = {
             options: { source: 'title', maxLength: 96 },
         },
         {
+            name: 'featured',
+            title: 'Show on Homepage',
+            type: 'boolean',
+            initialValue: false,
+        },
+        {
             name: 'category',
             title: 'Category',
             type: 'string',
@@ -42,6 +48,12 @@ const product = {
             name: 'description',
             title: 'Description',
             type: 'text',
+        },
+        {
+            name: 'images',
+            title: 'Product Images',
+            type: 'array',
+            of: [{ type: 'image', options: { hotspot: true } }]
         },
     ],
 }

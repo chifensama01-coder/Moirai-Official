@@ -1,28 +1,34 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
 
-const CATEGORY_LIST = ['Bespoke', 'Corsets', 'Cocktail Dresses', 'Cameroonian Traditional']
-const DESCS: Record<string, string> = {
-  'Bespoke': 'Custom pieces crafted around your measurements, vision and identity.',
-  'Corsets': 'Structured silhouettes designed to command every room you enter.',
-  'Cocktail Dresses': 'From intimate gatherings to grand entrances — effortless elegance.',
-  'Cameroonian Traditional': 'Heritage textiles reimagined through a modern, intentional lens.',
-}
-
 interface CollectionsClientProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   grouped: Record<string, any[]>
   waNumber: string
+  collections: any[]
+  heroImage: string | null
 }
 
-export default function CollectionsClient({ grouped, waNumber }: CollectionsClientProps) {
+export default function CollectionsClient({ grouped, waNumber, collections, heroImage }: CollectionsClientProps) {
   return (
     <div style={{ paddingTop: '5rem' }}>
       {/* Header */}
-      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: 'linear-gradient(170deg, #0d0b10, #130f18)', borderBottom: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: '#0d0b10', borderBottom: '1px solid #2a2133', position: 'relative', minHeight: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {heroImage && (
+          <Image
+            src={heroImage}
+            alt="Collections Hero"
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover', opacity: 0.35 }}
+            priority
+          />
+        )}
+        {!heroImage && (
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        )}
         <motion.div
           style={{ position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -42,27 +48,27 @@ export default function CollectionsClient({ grouped, waNumber }: CollectionsClie
             initial="hidden"
             animate="visible"
           >
-            {CATEGORY_LIST.map(cat => (
+            {collections.map(cat => (
               <motion.a
-                key={cat}
-                href={`#${cat.toLowerCase().replace(/ /g, '-')}`}
+                key={cat.title}
+                href={`#${cat.slug || cat.title.toLowerCase().replace(/ /g, '-')}`}
                 variants={staggerFadeUp}
                 whileHover={{ borderColor: '#9B5DE5', color: '#C77DFF', scale: 1.04 }}
                 transition={{ duration: 0.2 }}
                 style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '0.5rem 1.25rem', border: '1px solid #2a2133', color: '#7A6B8A', transition: 'all 0.25s', display: 'inline-block' }}
-              >{cat}</motion.a>
+              >{cat.title}</motion.a>
             ))}
           </motion.div>
         </motion.div>
       </section>
 
       {/* Sections per category */}
-      {CATEGORY_LIST.map((cat, ci) => {
-        const catProducts = grouped[cat] || []
+      {collections.map((cat, ci) => {
+        const catProducts = grouped[cat.title] || []
         return (
           <section
-            key={cat}
-            id={cat.toLowerCase().replace(/ /g, '-')}
+            key={cat.title}
+            id={cat.slug || cat.title.toLowerCase().replace(/ /g, '-')}
             className="section"
             style={{ background: ci % 2 === 0 ? '#050407' : '#0d0b10', borderBottom: '1px solid #2a2133' }}
           >
@@ -76,14 +82,8 @@ export default function CollectionsClient({ grouped, waNumber }: CollectionsClie
               >
                 <motion.div variants={staggerFadeUp}>
                   <p className="section-label">0{ci + 1}</p>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', marginBottom: '0.5rem' }}>{cat}</h2>
-                  <p style={{ color: '#7A6B8A', fontSize: '13px', maxWidth: 500 }}>{DESCS[cat]}</p>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', marginBottom: '0.5rem' }}>{cat.title}</h2>
                 </motion.div>
-                {cat === 'Bespoke' && (
-                  <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                    <Link href="/bespoke" className="btn-ghost">Learn About Bespoke</Link>
-                  </motion.div>
-                )}
               </motion.div>
 
               <motion.div
@@ -98,15 +98,14 @@ export default function CollectionsClient({ grouped, waNumber }: CollectionsClie
                     <motion.div
                       key={n}
                       variants={staggerFadeUp}
-                      style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg, #130f18, #1e1826)', border: '1px solid #2a2133', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+                      style={{ aspectRatio: '3/4', background: '#1e1826', border: '1px solid #2a2133', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
                     >
-                      <span style={{ fontSize: '2rem', opacity: 0.07 }}>✦</span>
-                      <p style={{ fontSize: '8px', letterSpacing: '0.25em', color: '#2a2133', textTransform: 'uppercase' }}>Coming Soon</p>
-                      <p style={{ fontSize: '8px', letterSpacing: '0.15em', color: '#2a2133', textTransform: 'uppercase' }}>Add via Admin</p>
+                      <span style={{ fontSize: '2rem', opacity: 0.15, marginBottom: '0.5rem' }}>✧</span>
+                      <p style={{ fontSize: '8px', letterSpacing: '0.25em', color: '#B8A9C9', textTransform: 'uppercase' }}>Curating Category</p>
                     </motion.div>
                   ))
-                  : catProducts.map(p => {
-                    const msg = encodeURIComponent(p.whatsappMessage || `Hi! I'm interested in ${p.name} from Moirai.`)
+                  : catProducts.map((p: any) => {
+                    const msg = encodeURIComponent(`Hi I want to order ${p.name || 'this item'}`)
                     return (
                       <motion.div
                         key={p._id}
@@ -115,35 +114,37 @@ export default function CollectionsClient({ grouped, waNumber }: CollectionsClie
                         whileHover="hover"
                         initial="rest"
                       >
-                        {p.imageUrl
-                          ? (
-                            <motion.img
-                              src={p.imageUrl}
-                              alt={p.name}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              variants={{ rest: { scale: 1 }, hover: { scale: 1.06 } }}
-                              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                            />
-                          )
-                          : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1e1826, #2D1B69)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
-                        }
-                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,4,7,0.92) 0%, transparent 50%)', padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#F0EBF8' }}>{p.name}</p>
-                          {p.price && <p style={{ fontSize: '11px', color: '#C77DFF', marginBottom: '0.75rem' }}>{p.price}</p>}
-                          {p.available !== false && (
-                            <motion.a
-                              href={`https://wa.me/${waNumber}?text=${msg}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ display: 'inline-block', padding: '0.4rem 0.9rem', border: '1px solid #9B5DE5', color: '#C77DFF', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', width: 'fit-content' }}
-                              whileHover={{ backgroundColor: 'rgba(107,63,160,0.3)', scale: 1.04 }}
-                              whileTap={{ scale: 0.97 }}
-                              transition={{ duration: 0.2 }}
-                            >Enquire</motion.a>
-                          )}
-                          {p.available === false && (
-                            <span style={{ fontSize: '9px', letterSpacing: '0.15em', color: '#7A6B8A', textTransform: 'uppercase' }}>Sold Out</span>
-                          )}
+                        {p.imageUrl ? (
+                          <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} variants={{ rest: { scale: 1 }, hover: { scale: 1.06 } }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+                             <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} loading="lazy" />
+                          </motion.div>
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1e1826, #2D1B69)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
+                        )}
+                        <div style={{ position: 'absolute', inset: 0, padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: p.imageUrl ? 'transparent' : 'linear-gradient(to top, rgba(5,4,7,0.92) 0%, transparent 50%)' }}>
+                          <motion.div 
+                            initial={{ opacity: 0 }} 
+                            variants={{ hover: { opacity: 1, y: 0 }, rest: { opacity: 0, y: 10 } }} 
+                            transition={{ duration: 0.2 }}
+                            style={{ background: 'rgba(13,11,16,0.95)', padding: '1rem', border: '1px solid #2a2133' }}
+                          >
+                            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', marginBottom: '0.25rem', color: '#F0EBF8' }}>{p.name}</p>
+                            {p.price && <p style={{ fontSize: '11px', color: '#C77DFF', marginBottom: '0.75rem' }}>{p.price}</p>}
+                            {p.available !== false && (
+                              <motion.a
+                                href={`https://wa.me/237682710405?text=${msg}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ display: 'inline-block', padding: '0.4rem 0.9rem', border: '1px solid #9B5DE5', color: '#C77DFF', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', width: 'fit-content' }}
+                                whileHover={{ backgroundColor: 'rgba(107,63,160,0.3)', scale: 1.04 }}
+                                whileTap={{ scale: 0.97 }}
+                                transition={{ duration: 0.2 }}
+                              >Order Now</motion.a>
+                            )}
+                            {p.available === false && (
+                              <span style={{ fontSize: '9px', letterSpacing: '0.15em', color: '#7A6B8A', textTransform: 'uppercase' }}>Sold Out</span>
+                            )}
+                          </motion.div>
                         </div>
                       </motion.div>
                     )

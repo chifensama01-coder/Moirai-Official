@@ -19,6 +19,7 @@ export default async function ProductPage({ params }: PageProps) {
        title,
        price,
        image,
+       images,
        category,
        description
     }`, { slug })
@@ -37,6 +38,7 @@ export default async function ProductPage({ params }: PageProps) {
     desc: product.description || '',
     category: product.category || 'Other',
     image: product.image ? urlFor(product.image).url() : null,
+    images: Array.isArray(product.images) ? product.images.map((img: any) => urlFor(img).url()) : [],
   }
 
   return <ProductDetailClient product={parsedProduct} />

@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
@@ -12,7 +13,7 @@ const PROCESS = [
 
 const FAQS = [
   { q: 'How long does a bespoke piece take?', a: 'Typically 2–4 weeks depending on complexity. Rush orders can be discussed and accommodated where possible.' },
-  { q: 'How do I start a bespoke order?', a: "Simply reach out via WhatsApp at +237 682 710 405 or use the button below. We'll schedule a consultation immediately." },
+  { q: 'How do I start a bespoke order?', a: "Simply reach out via WhatsApp at +237 682 710 405 or use the form below. We'll schedule a consultation immediately." },
   { q: 'Do you offer custom sizing?', a: 'Every bespoke piece is made to your exact measurements. No standard sizing. You are the standard.' },
   { q: 'What is the price range?', a: "Prices vary by design complexity and fabric selected. Contact us and we'll discuss what works within your budget." },
   { q: 'Can I see examples of previous bespoke work?', a: 'Yes! Follow @Moirai.th on Instagram to see previous pieces, or ask our team to share a portfolio when you reach out.' },
@@ -27,12 +28,21 @@ interface BespokeClientProps {
 }
 
 export default function BespokeClient({ heroImage, gallery }: BespokeClientProps) {
-  const waUrl = `https://wa.me/${WA}?text=${encodeURIComponent('Hi! I am interested in a bespoke piece from Moirai. I would like to schedule a consultation.')}`
+  const [formData, setFormData] = useState({ name: '', phone: '', desc: '' })
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const text = `Hi, I am ${formData.name}.\n\nI want a custom design: ${formData.desc}\n\nMy number is: ${formData.phone}`
+    const finalUrl = `https://wa.me/${WA}?text=${encodeURIComponent(text)}`
+    window.open(finalUrl, '_blank')
+  }
+
+  const baseWaUrl = `https://wa.me/${WA}?text=${encodeURIComponent('Hi! I am interested in a bespoke piece from Moirai.')}`
 
   return (
     <div style={{ paddingTop: '5rem' }}>
       {/* Hero */}
-      <section style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '6rem 2rem', background: 'linear-gradient(170deg, #0d0b10, #1e1826)', borderBottom: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '9rem 2rem', background: 'linear-gradient(170deg, #0d0b10, #1e1826)', position: 'relative', overflow: 'hidden' }}>
         {heroImage && (
           <img 
             src={heroImage} 
@@ -40,7 +50,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3, mixBlendMode: 'overlay', pointerEvents: 'none' }} 
           />
         )}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div className="luxury-glow" />
         <motion.div
           style={{ maxWidth: 700, position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -60,7 +70,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
             Your identity, tailored to perfection. A bespoke piece from Moirai is not just clothing — it is a statement of who you are becoming.
           </motion.p>
           <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">Start Your Bespoke Order</a>
+            <Link href="#contact-design" className="btn-primary">Start Your Bespoke Order</Link>
           </motion.div>
         </motion.div>
       </section>
@@ -89,14 +99,15 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
               <motion.div
                 key={step.num}
                 variants={staggerFadeUp}
-                whileHover={{ borderColor: '#9B5DE5' }}
                 style={{
                   padding: '3rem 2.5rem',
-                  border: '1px solid #2a2133',
+                  border: '1px solid rgba(155,93,229,0.1)',
                   marginLeft: i === 0 ? 0 : '-1px',
                   position: 'relative',
-                  transition: 'border-color 0.3s',
+                  background: 'rgba(13,11,16,0.5)',
+                  transition: 'background 0.3s, box-shadow 0.3s',
                 }}
+                whileHover={{ background: 'rgba(26,20,35,0.8)', boxShadow: '0 0 20px rgba(107,63,160,0.1)' }}
               >
                 <motion.div
                   style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, #2D1B69, #9B5DE5)', originX: 0 }}
@@ -105,7 +116,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
                 />
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '3.5rem', fontWeight: 700, color: '#2a2133', lineHeight: 1, marginBottom: '1.5rem' }}>{step.num}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '3.5rem', fontWeight: 700, color: 'rgba(255,255,255,0.05)', lineHeight: 1, marginBottom: '1.5rem' }}>{step.num}</p>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', color: '#E0AAFF', marginBottom: '0.75rem' }}>{step.title}</p>
                 <p style={{ color: '#7A6B8A', fontSize: '12px', lineHeight: 1.9 }}>{step.desc}</p>
               </motion.div>
@@ -115,8 +126,9 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
       </section>
 
       {/* Gallery */}
-      <section className="section" style={{ background: '#0d0b10', borderTop: '1px solid #2a2133', borderBottom: '1px solid #2a2133' }}>
-        <div className="container">
+      <section className="section" style={{ background: '#0d0b10', position: 'relative' }}>
+         <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '100%', height: '80%', background: 'radial-gradient(ellipse at center, rgba(107,63,160,0.06) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <motion.div
             style={{ textAlign: 'center', marginBottom: '3rem' }}
             variants={staggerContainer}
@@ -138,7 +150,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
               <motion.div
                 key={i}
                 variants={staggerFadeUp}
-                style={{ aspectRatio: i % 3 === 0 ? '2/3' : '3/4', border: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}
+                style={{ aspectRatio: i % 3 === 0 ? '2/3' : '3/4', border: '1px solid rgba(255,255,255,0.1)', position: 'relative', overflow: 'hidden' }}
               >
                 <motion.img
                   src={item.url}
@@ -149,14 +161,78 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
                 />
               </motion.div>
             )) : (
-              <div style={{ padding: '3rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', fontStyle: 'italic', border: '1px dashed #2a2133' }}>
-                Gallery coming soon. Check back later or view our Instagram!
+              <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', border: '1px dashed rgba(255,255,255,0.05)', background: 'rgba(13,11,16,0.3)' }}>
+                 <p style={{ fontSize: '1.5rem', opacity: 0.3, marginBottom: '0.5rem' }}>✧</p>
+                 <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Curating the Lookbook</p>
               </div>
             )}
           </motion.div>
-          <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '12px', color: '#7A6B8A' }}>
+          <p style={{ textAlign: 'center', marginTop: '3rem', fontSize: '12px', color: '#7A6B8A' }}>
             Follow <a href="https://instagram.com/Moirai.th" target="_blank" rel="noopener noreferrer" style={{ color: '#9B5DE5' }}>@Moirai.th</a> on Instagram to see real pieces in the meantime.
           </p>
+        </div>
+      </section>
+
+      {/* Request Custom Design Form */}
+      <section className="section" id="contact-design" style={{ background: '#050407', position: 'relative' }}>
+        <div className="container" style={{ maxWidth: 700, margin: '0 auto' }}>
+          <motion.div
+            style={{ textAlign: 'center', marginBottom: '3rem' }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            <motion.p className="section-label" variants={staggerFadeUp}>Start Designing</motion.p>
+            <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', marginBottom: '1rem' }}>Request Custom Design</motion.h2>
+            <motion.p variants={staggerFadeUp} style={{ color: '#B8A9C9', fontSize: '14px', lineHeight: 1.8 }}>Describe your vision, and our artisans will bring it to life. Submit the form to coordinate directly with our atelier.</motion.p>
+          </motion.div>
+
+          <motion.form 
+            onSubmit={handleFormSubmit}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ background: '#130f18', padding: '3rem', border: '1px solid rgba(155,93,229,0.15)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}
+          >
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Full Name</label>
+              <input 
+                type="text" 
+                required 
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                style={{ width: '100%', padding: '1rem', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', fontFamily: 'inherit' }}
+                placeholder="Your Name"
+              />
+            </div>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>WhatsApp Number</label>
+              <input 
+                type="tel" 
+                required 
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                style={{ width: '100%', padding: '1rem', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', fontFamily: 'inherit' }}
+                placeholder="+1 234 567 890"
+              />
+            </div>
+
+            <div style={{ marginBottom: '2.5rem' }}>
+              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Your Vision</label>
+              <textarea 
+                required 
+                value={formData.desc}
+                onChange={e => setFormData({...formData, desc: e.target.value})}
+                style={{ width: '100%', padding: '1rem', minHeight: '120px', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+                placeholder="Describe the occasion, preferred fabrics, or any inspiration you have."
+              />
+            </div>
+
+            <button type="submit" className="btn-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Send Inquiry via WhatsApp</button>
+          </motion.form>
         </div>
       </section>
 
@@ -170,6 +246,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
             whileInView="visible"
             viewport={{ once: true, margin: '-80px' }}
           >
+             <motion.div className="divider" style={{ marginBottom: '2rem' }} variants={staggerFadeUp} />
             <motion.p className="section-label" variants={staggerFadeUp}>Questions</motion.p>
             <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>Frequently Asked</motion.h2>
           </motion.div>
@@ -180,18 +257,18 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-              style={{ borderBottom: '1px solid #2a2133', padding: '2rem 0' }}
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2rem 0' }}
             >
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', color: '#E0AAFF', marginBottom: '0.75rem' }}>{faq.q}</p>
-              <p style={{ color: '#B8A9C9', fontSize: '13px', lineHeight: 1.9 }}>{faq.a}</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#E0AAFF', marginBottom: '0.75rem', letterSpacing: '0.04em' }}>{faq.q}</p>
+              <p style={{ color: '#B8A9C9', fontSize: '14px', lineHeight: 1.85 }}>{faq.a}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section style={{ padding: '6rem 2rem', textAlign: 'center', borderTop: '1px solid #2a2133', background: 'linear-gradient(170deg, #130f18, #050407)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(107,63,160,0.1) 0%, transparent 65%)', pointerEvents: 'none' }} />
+      <section style={{ padding: '9rem 2rem', textAlign: 'center', background: 'linear-gradient(170deg, #130f18, #050407)', position: 'relative', overflow: 'hidden' }}>
+        <div className="luxury-glow" style={{ opacity: 0.5 }} />
         <motion.div
           style={{ maxWidth: 500, margin: '0 auto', position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -201,12 +278,12 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
         >
           <motion.h2
             variants={staggerFadeUp}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', fontStyle: 'italic', marginBottom: '2rem', lineHeight: 1.2 }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem,5vw,3.5rem)', fontStyle: 'italic', marginBottom: '2.5rem', lineHeight: 1.2 }}
           >
             Ready to begin your<br />bespoke journey?
           </motion.h2>
           <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">Chat With Us on WhatsApp</a>
+            <a href={baseWaUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">Chat directly on WhatsApp</a>
           </motion.div>
         </motion.div>
       </section>

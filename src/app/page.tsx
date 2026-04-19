@@ -29,16 +29,32 @@ export default async function HomePage() {
   const productsWithUrls = products.map((p: any) => ({
     ...p,
     imageUrl: p.image ? urlFor(p.image).width(520).url() : null,
+    images: Array.isArray(p.images) ? p.images.map((img: any) => img ? urlFor(img).width(520).url() : null).filter(Boolean) : [],
   }))
 
   const heroImageUrl = settings?.heroImage ? urlFor(settings.heroImage).url() : undefined
   const heroText = settings?.heroText
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const categories = settings?.categories?.map((c: any) => ({
+  const collections = settings?.collections?.map((c: any) => ({
     title: c.title,
-    url: c.image ? urlFor(c.image).url() : '',
-  })).filter((c: any) => c.url) || []
+    slug: c.slug || c.title?.toLowerCase().replace(/ /g, '-'),
+    image: c.image ? urlFor(c.image).url() : '',
+  })).filter((c: any) => c.image || c.title) || []
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const heroSlides = settings?.heroSlides?.map((s: any) => ({
+    title: s.title,
+    subtitle: s.subtitle,
+    image: s.image ? urlFor(s.image).width(1600).quality(90).url() : '',
+  })) || []
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lookbook = settings?.lookbook?.map((l: any) => ({
+    title: l.title,
+    description: l.description,
+    image: l.image ? urlFor(l.image).width(800).quality(85).url() : '',
+  })) || []
 
   return (
     <HomeClient
@@ -46,9 +62,11 @@ export default async function HomePage() {
       posts={posts}
       waNumber={waNumber}
       waMsg={waMsg}
-      categories={categories}
+      collections={collections}
       heroImageUrl={heroImageUrl}
       heroText={heroText}
+      heroSlides={heroSlides}
+      lookbook={lookbook}
     />
   )
 }

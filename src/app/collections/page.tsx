@@ -29,13 +29,16 @@ export default async function CollectionsPage() {
     imageUrl: p.image ? urlFor(p.image).width(480).url() : null,
   }))
 
+  const collections = Array.isArray(settings?.collections) ? settings.collections : []
+  const collectionsHeroImage = settings?.collectionsHeroImage ? urlFor(settings.collectionsHeroImage).width(1200).quality(80).url() : null
+
   // Group products by collection
   const grouped: Record<string, typeof productsWithUrls> = {}
-  CATEGORY_LIST.forEach(c => { grouped[c] = [] })
+  collections.forEach((c: any) => { grouped[c.title] = [] })
   productsWithUrls.forEach(p => {
-    const cat = p.collection?.title || 'Other'
-    if (grouped[cat]) grouped[cat].push(p)
+    const cat = p.collection?.title
+    if (cat && grouped[cat]) grouped[cat].push(p)
   })
 
-  return <CollectionsClient grouped={grouped} waNumber={waNumber} />
+  return <CollectionsClient grouped={grouped} waNumber={waNumber} collections={collections} heroImage={collectionsHeroImage} />
 }

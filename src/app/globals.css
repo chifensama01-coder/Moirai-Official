@@ -27,8 +27,8 @@ body {
   color: var(--cream);
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 14.5px;
+  line-height: 1.85;
   letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
 }
@@ -47,15 +47,23 @@ body::after {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
 }
 
 a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; object-fit: cover; }
+img { 
+  max-width: 100%; 
+  height: 100%;
+  aspect-ratio: inherit;
+  display: block; 
+  object-fit: cover !important; 
+  animation: imageReveal 0.8s ease-out forwards; 
+}
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
 .container { max-width: 1280px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-.section { padding: 7rem 0; position: relative; }
+.section { padding: 9rem 0; position: relative; }
 
 .divider {
   width: 70px; height: 1px;
@@ -74,7 +82,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .btn-primary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 1rem 2.75rem;
   background: linear-gradient(135deg, var(--purple-deep), var(--purple));
   color: var(--white);
@@ -83,37 +93,75 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  border: 1px solid transparent;
-  transition: all 0.35s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 15px rgba(107, 63, 160, 0.2);
+  transition: all 0.25s ease-out;
   cursor: pointer;
+  min-height: 48px;
 }
-.btn-primary:hover { background: linear-gradient(135deg, var(--purple), var(--purple-bright)); }
+.btn-primary:hover { 
+  background: linear-gradient(135deg, var(--purple), var(--purple-bright)); 
+  box-shadow: 0 6px 20px rgba(107, 63, 160, 0.4);
+  transform: scale(1.03);
+}
 
 .btn-ghost {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.9rem 2.5rem;
-  border: 1px solid var(--purple-bright);
+  border: 1px solid rgba(155, 93, 229, 0.4);
+  background: rgba(155, 93, 229, 0.05);
   color: var(--purple-light);
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease-out;
   cursor: pointer;
+  min-height: 48px;
 }
-.btn-ghost:hover { background: var(--purple-bright); color: var(--white); }
+.btn-ghost:hover { 
+  background: rgba(155, 93, 229, 0.2);
+  border-color: rgba(155, 93, 229, 0.8);
+  color: var(--white); 
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(155, 93, 229, 0.15);
+}
 
 .btn-outline {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.9rem 2.5rem;
   border: 1px solid var(--border);
   color: var(--grey);
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease-out;
   cursor: pointer;
+  min-height: 48px;
 }
-.btn-outline:hover { border-color: var(--purple-bright); color: var(--purple-light); }
+.btn-outline:hover { 
+  border-color: rgba(155, 93, 229, 0.5); 
+  color: var(--purple-light); 
+  box-shadow: 0 0 15px rgba(155, 93, 229, 0.1);
+  transform: scale(1.03);
+}
+
+.luxury-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(155,93,229,0.15) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--black); }
@@ -121,13 +169,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes imageReveal { 0% { opacity: 0; filter: blur(10px); } 100% { opacity: 1; filter: blur(0); } }
 @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes wapulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.75); opacity: 0; } }
 @keyframes aipulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.5; } }
 @keyframes aitype { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
 
 @media (max-width: 768px) {
-  .section { padding: 4rem 0; }
+  .section { padding: 5rem 0; }
   .container { padding: 0 1.25rem; }
 }
 

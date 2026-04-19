@@ -1,0 +1,50 @@
+import type { Metadata } from 'next'
+import './globals.css'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import WhatsAppButton from '@/components/WhatsAppButton'
+import AIChatWidget from '@/components/AIChatWidget'
+import PageTransition from '@/components/PageTransition'
+import { client, siteSettingsQuery } from '@/lib/sanity'
+
+export const metadata: Metadata = {
+  title: 'Moirai. — Destiny, Tailored',
+  description: 'Not a Trend. IDENTITY. Luxury bespoke fashion, corsets, cocktail dresses and Cameroonian traditional wear. The House of Moirai.',
+  keywords: 'bespoke fashion, Cameroon, couture, corsets, cocktail dresses, fashion school, Moirai',
+  openGraph: {
+    title: 'Moirai. — Destiny, Tailored',
+    description: 'Not a Trend. IDENTITY. Luxury bespoke fashion crafted for who you are becoming.',
+    siteName: 'Moirai.',
+  },
+}
+
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let settings: any = null
+  try {
+    settings = await client.fetch(siteSettingsQuery)
+  } catch {
+    // Sanity not yet configured — use defaults
+  }
+
+  const waNumber = settings?.whatsappNumber || '237682710405'
+  const waMessage = settings?.whatsappDefaultMessage || "Hi, I'd like to inquire about Moirai"
+
+  return (
+    <html lang="en">
+      <body>
+        <Navbar />
+        <main style={{ position: 'relative', zIndex: 1 }}>
+          <PageTransition>{children}</PageTransition>
+        </main>
+        <Footer settings={settings} />
+        <WhatsAppButton number={waNumber} message={waMessage} />
+        <AIChatWidget />
+      </body>
+    </html>
+  )
+}

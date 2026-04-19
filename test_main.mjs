@@ -1,0 +1,1 @@
+import { a, a as b } from './test_import.mjs'; console.log(a, b);

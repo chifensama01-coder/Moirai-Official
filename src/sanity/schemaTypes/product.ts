@@ -9,6 +9,25 @@ const product = {
             type: 'string',
         },
         {
+            name: 'slug',
+            title: 'Slug',
+            type: 'slug',
+            options: { source: 'title', maxLength: 96 },
+        },
+        {
+            name: 'category',
+            title: 'Category',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Bespoke', value: 'Bespoke' },
+                    { title: 'Corsets', value: 'Corsets' },
+                    { title: 'Cocktail Dresses', value: 'Cocktail Dresses' },
+                    { title: 'Cameroonian Traditional', value: 'Cameroonian Traditional' }
+                ],
+            }
+        },
+        {
             name: 'price',
             title: 'Price',
             type: 'number',

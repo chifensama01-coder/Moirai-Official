@@ -25,10 +25,12 @@ interface HomeClientProps {
   waNumber: string
   waMsg: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  categoryImages: any[]
+  categories: any[]
+  heroImageUrl?: string
+  heroText?: string
 }
 
-export default function HomeClient({ products, posts, waNumber, waMsg, categoryImages }: HomeClientProps) {
+export default function HomeClient({ products, posts, waNumber, waMsg, categories, heroImageUrl, heroText }: HomeClientProps) {
   return (
     <>
       {/* ── HERO ── */}
@@ -67,8 +69,14 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categoryI
               marginBottom: '1.5rem',
             }}
           >
-            <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Destiny,</span>
-            <span style={{ display: 'block', background: 'linear-gradient(135deg, #9B5DE5 0%, #E0AAFF 60%, #FAFAFA 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Tailored.</span>
+            {heroText ? (
+              <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{heroText}</span>
+            ) : (
+              <>
+                <span style={{ display: 'block', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 60%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Destiny,</span>
+                <span style={{ display: 'block', background: 'linear-gradient(135deg, #9B5DE5 0%, #E0AAFF 60%, #FAFAFA 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Tailored.</span>
+              </>
+            )}
           </motion.h1>
 
           <motion.div
@@ -126,7 +134,14 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categoryI
             background: 'linear-gradient(160deg, #1e1826 0%, #2D1B69 40%, #6B3FA0 100%)',
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3rem', opacity: 0.12 }}>
+          {heroImageUrl && (
+            <img 
+              src={heroImageUrl} 
+              alt="Moirai Hero" 
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.45 }} 
+            />
+          )}
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3rem', opacity: 0.12, zIndex: 1 }}>
             {['Moirai.', '✦', 'Destiny, Tailored.', '◆', 'The House of Moirai', '◇', 'Not a Trend.', '✧'].map((t, i) => (
               <p key={i} style={{ fontFamily: i % 2 === 0 ? 'var(--font-display)' : 'inherit', fontSize: i === 0 ? '5rem' : i % 2 === 0 ? '1.2rem' : '2rem', letterSpacing: '0.2em', color: 'white', textAlign: 'center', fontWeight: 700 }}>{t}</p>
             ))}
@@ -218,14 +233,14 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categoryI
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
           >
-            {CATEGORIES.map((cat, i) => (
-              <motion.div key={cat.name} variants={staggerFadeUp}>
+            {categories && categories.length > 0 ? categories.map((cat, i) => (
+              <motion.div key={i} variants={staggerFadeUp}>
                 <motion.div
                   whileHover={{ scale: 1.02, borderColor: '#6B3FA0' }}
                   transition={{ duration: 0.3 }}
                   style={{ borderColor: '#2a2133' }}
                 >
-                  <Link href={cat.href} style={{
+                  <Link href="/collections" style={{
                     display: 'block',
                     padding: '3rem 2rem',
                     background: '#130f18',
@@ -237,20 +252,24 @@ export default function HomeClient({ products, posts, waNumber, waMsg, categoryI
                     {/* Image */}
                     <div style={{ width: '100%', aspectRatio: '4/3', marginBottom: '1.5rem', position: 'relative', overflow: 'hidden' }}>
                       <motion.img
-                        src={categoryImages[i]}
-                        alt={cat.name}
+                        src={cat.url}
+                        alt={cat.title}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         whileHover={{ scale: 1.06 }}
                         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                       />
                     </div>
-                    <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', marginBottom: '0.5rem' }}>{cat.name}</p>
-                    <p style={{ fontSize: '12px', color: '#7A6B8A', lineHeight: 1.7 }}>{cat.desc}</p>
+                    <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', marginBottom: '0.5rem' }}>{cat.title}</p>
+                    {cat.desc && <p style={{ fontSize: '12px', color: '#7A6B8A', lineHeight: 1.7 }}>{cat.desc}</p>}
                     <p style={{ fontSize: '10px', color: '#9B5DE5', letterSpacing: '0.2em', marginTop: '1.25rem', textTransform: 'uppercase' }}>Explore →</p>
                   </Link>
                 </motion.div>
               </motion.div>
-            ))}
+            )) : (
+               <div style={{ padding: '3rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', fontStyle: 'italic', border: '1px dashed #2a2133' }}>
+                 Collections coming soon.
+               </div>
+            )}
           </motion.div>
         </div>
       </section>

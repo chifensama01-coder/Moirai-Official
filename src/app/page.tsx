@@ -1,10 +1,7 @@
 import { client, featuredProductsQuery, recentPostsQuery, siteSettingsQuery, urlFor } from '@/lib/sanity'
-import { productPhotos } from '@/assets'
 import HomeClient from '@/components/HomeClient'
 
 export const revalidate = 60
-
-const categoryImages = [productPhotos[20], productPhotos[21], productPhotos[22], productPhotos[23]]
 
 export default async function HomePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,13 +31,24 @@ export default async function HomePage() {
     imageUrl: p.image ? urlFor(p.image).width(520).url() : null,
   }))
 
+  const heroImageUrl = settings?.heroImage ? urlFor(settings.heroImage).url() : undefined
+  const heroText = settings?.heroText
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categories = settings?.categories?.map((c: any) => ({
+    title: c.title,
+    url: c.image ? urlFor(c.image).url() : '',
+  })).filter((c: any) => c.url) || []
+
   return (
     <HomeClient
       products={productsWithUrls}
       posts={posts}
       waNumber={waNumber}
       waMsg={waMsg}
-      categoryImages={categoryImages}
+      categories={categories}
+      heroImageUrl={heroImageUrl}
+      heroText={heroText}
     />
   )
 }

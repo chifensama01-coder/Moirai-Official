@@ -29,15 +29,20 @@ export const allCollectionsQuery = `*[_type == "collection"] | order(_createdAt 
 }`
 
 export const recentPostsQuery = `*[_type == "post"] | order(publishedAt desc)[0...3] {
-  _id, title, slug, excerpt, coverImage, publishedAt
+  _id, title, slug, excerpt, mainImage, publishedAt
 }`
 
-export const allPostsQuery = `*[_type == "post"] | order(publishedAt desc) {
-  _id, title, slug, excerpt, coverImage, publishedAt
+export const allPostsQuery = `*[_type == "post"]{
+  _id,
+  title,
+  slug,
+  mainImage,
+  excerpt,
+  publishedAt
 }`
 
 export const postBySlugQuery = `*[_type == "post" && slug.current == $slug][0] {
-  _id, title, slug, excerpt, coverImage, body, publishedAt
+  _id, title, slug, excerpt, mainImage, body, publishedAt
 }`
 
 export const siteSettingsQuery = `*[_type == "siteSettings"][0]`

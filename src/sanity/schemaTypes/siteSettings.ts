@@ -55,7 +55,7 @@ const siteSettings = {
         },
         {
             name: 'lookbook',
-            title: 'Lookbook Items',
+            title: 'Events / Lookbook',
             type: 'array',
             of: [
                 {
@@ -63,7 +63,8 @@ const siteSettings = {
                     fields: [
                         { name: 'title', title: 'Title', type: 'string' },
                         { name: 'description', title: 'Description', type: 'text' },
-                        { name: 'image', title: 'Image', type: 'image' },
+                        { name: 'date', title: 'Date (Optional)', type: 'string' },
+                        { name: 'images', title: 'Images', type: 'array', of: [{ type: 'image' }] },
                     ],
                 },
             ],
@@ -111,6 +112,72 @@ const siteSettings = {
                 },
             ],
         },
+        {
+            name: 'partners',
+            title: 'Trusted By / Partners',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'name', title: 'Partner Name', type: 'string' },
+                        { name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'ceo',
+            title: 'CEO Feature',
+            type: 'object',
+            fields: [
+                { name: 'name', title: 'Name', type: 'string' },
+                { name: 'image', title: 'CEO Image', type: 'image' },
+                { name: 'bio', title: 'Bio', type: 'text' }
+            ]
+        },
+        {
+            name: 'team',
+            title: 'Meet the Team',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'name', title: 'Name', type: 'string' },
+                        { name: 'role', title: 'Role', type: 'string' },
+                        { name: 'image', title: 'Image', type: 'image' }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'footerLocation',
+            title: 'Footer Location Text',
+            type: 'string',
+            description: 'E.g., "Made in Cameroon 🇨🇲 | Buea, Cameroon"'
+        },
+        {
+            name: 'newsletterEmail',
+            title: 'Newsletter Email',
+            type: 'string',
+            description: 'Email address to manage newsletter signups (if empty, newsletter section is hidden)'
+        },
+        {
+            name: 'testimonials',
+            title: 'Testimonials',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'quote', title: 'Quote', type: 'text' },
+                        { name: 'author', title: 'Author Name', type: 'string' },
+                        { name: 'role', title: 'Author Role / Context', type: 'string' }
+                    ]
+                }
+            ]
+        }
     ],
 }
 

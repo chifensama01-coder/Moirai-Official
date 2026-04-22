@@ -5,9 +5,11 @@ import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import AIChatWidget from '@/components/AIChatWidget'
 import PageTransition from '@/components/PageTransition'
+import { Providers } from '@/components/Providers'
 import { client, siteSettingsQuery } from '@/lib/sanity'
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://moirai-official-xi.vercel.app"),
   title: 'Moirai. — Destiny, Tailored',
   description: 'Not a Trend. IDENTITY. Luxury bespoke fashion, corsets, cocktail dresses and Cameroonian traditional wear. The House of Moirai.',
   keywords: 'bespoke fashion, Cameroon, couture, corsets, cocktail dresses, fashion school, Moirai, luxury wear, custom dresses',
@@ -37,6 +39,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 }
 
 export default async function RootLayout({
@@ -58,13 +65,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main style={{ position: 'relative', zIndex: 1 }}>
-          <PageTransition>{children}</PageTransition>
-        </main>
-        <Footer settings={settings} />
-        <WhatsAppButton number={waNumber} message={waMessage} />
-        <AIChatWidget />
+        <Providers>
+          <Navbar />
+          <main style={{ position: 'relative', zIndex: 1 }}>
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <Footer settings={settings} />
+          <WhatsAppButton number={waNumber} message={waMessage} />
+          <AIChatWidget />
+        </Providers>
       </body>
     </html>
   )

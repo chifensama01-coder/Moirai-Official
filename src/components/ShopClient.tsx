@@ -1,30 +1,40 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
-
 import Image from 'next/image'
+import { urlFor } from '@/sanity/lib/image'
+import { useCurrency } from './Providers'
 
 const WA = '237682710405'
 export default function ShopClient({ products }: { products: any[] }) {
   const [activeCategory, setActiveCategory] = useState('All')
   const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [search, setSearch] = useState('')
+  const { formatPrice } = useCurrency()
 
-  const parsedItems = products.map((p: any) => ({
+  const parsedItems = useMemo(() => products.map((p: any) => ({
     id: p._id,
-    name: p.title || 'Product',
-    slug: p.slug?.current,
-    category: p.category || 'Other',
-    price: p.price ? `$${p.price}` : 'Price on request',
+    name: p.title || p.name || 'Product',
+    slug: p.slug?.current || p.slug,
+    category: p.category?.title || p.category || 'Other',
+    price: p.price, // Raw number for the hook
     desc: p.description || '',
-    image: p.imageUrl,
-  }))
+    image: p.imageUrl || p.image,
+    secondaryImage: p.images?.[0], // For hover reveal
+  })), [products])
 
-  const uniqueCategories = Array.from(new Set(parsedItems.map(p => p.category))).filter(Boolean)
+  const uniqueCategories = Array.from(new Set(parsedItems.map(p => p.category))).filter((c): c is string => Boolean(c) && typeof c === 'string')
   const dynamicCategories = ['All', ...uniqueCategories]
 
-  const filtered = activeCategory === 'All' ? parsedItems : parsedItems.filter(p => p.category === activeCategory)
+  const filtered = useMemo(() => {
+    return parsedItems.filter(p => {
+      const matchCat = activeCategory === 'All' || p.category === activeCategory
+      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.desc.toLowerCase().includes(search.toLowerCase())
+      return matchCat && matchSearch
+    })
+  }, [parsedItems, activeCategory, search])
 
   const waEnquire = (name: string) =>
     `https://wa.me/${WA}?text=${encodeURIComponent(`Hi I want to order ${name}`)}`
@@ -35,12 +45,12 @@ export default function ShopClient({ products }: { products: any[] }) {
       <section style={{
         padding: '5rem 2rem 3rem',
         textAlign: 'center',
-        background: 'linear-gradient(170deg, #0d0b10 0%, #130f18 60%, #1e1826 100%)',
-        borderBottom: '1px solid #2a2133',
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
         position: 'relative',
         overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.18) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(124, 58, 237, 0.08) 0%, transparent 60%)', pointerEvents: 'none' }} />
         <motion.div
           style={{ position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -55,36 +65,80 @@ export default function ShopClient({ products }: { products: any[] }) {
               fontSize: 'clamp(3rem,8vw,6rem)',
               fontWeight: 700,
               marginBottom: '1rem',
-              background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 50%, #9B5DE5 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: 'var(--text)'
             }}
           >Shop</motion.h1>
           <motion.div className="divider" style={{ marginBottom: '1.5rem' }} variants={staggerFadeUp} />
-          <motion.p variants={staggerFadeUp} style={{ color: '#B8A9C9', fontSize: '13px', maxWidth: 480, margin: '0 auto 0' }}>
+          <motion.p variants={staggerFadeUp} style={{ color: 'var(--muted)', fontSize: '13px', maxWidth: 480, margin: '0 auto 0' }}>
             Enquire via WhatsApp. Payment via MoMo on confirmation.
           </motion.p>
         </motion.div>
       </section>
 
       {/* Sticky filter bar */}
-      <div style={{
-        background: 'rgba(13,11,16,0.98)',
-        borderBottom: '1px solid #2a2133',
+      <div className="sticky-bar" style={{
+        background: 'rgba(var(--bg-rgb, 255, 255, 255), 0.98)',
+        borderBottom: '1px solid var(--border)',
         padding: '1rem 2rem',
         position: 'sticky',
         top: 60,
         zIndex: 100,
         backdropFilter: 'blur(12px)',
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Search bar inside filter block */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+             <input 
+               type="text" 
+               placeholder="Search collection..." 
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               style={{
+                 background: 'var(--bg)',
+                 border: '1px solid var(--border)',
+                 color: 'var(--text)',
+                 padding: '0.6rem 1rem',
+                 fontSize: '13px',
+                 fontFamily: 'var(--font-body)',
+                 outline: 'none',
+                 width: '100%',
+                 maxWidth: '300px'
+               }}
+             />
+             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              {(['grid', 'list'] as const).map(v => (
+                <motion.button
+                  key={v}
+                  onClick={() => setView(v)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    width: 32, height: 32,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid',
+                    cursor: 'pointer',
+                    borderColor: view === v ? 'var(--accent)' : 'var(--border)',
+                    color: view === v ? 'var(--accent)' : 'var(--muted)',
+                    background: view === v ? 'var(--accent-soft)' : 'transparent',
+                  }}
+                >
+                  {v === 'grid'
+                    ? <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="0" y="0" width="5" height="5" /><rect x="7" y="0" width="5" height="5" /><rect x="0" y="7" width="5" height="5" /><rect x="7" y="7" width="5" height="5" /></svg>
+                    : <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="0" y="0" width="12" height="2.5" /><rect x="0" y="5" width="12" height="2.5" /><rect x="0" y="10" width="12" height="2.5" /></svg>
+                  }
+                </motion.button>
+              ))}
+              <span style={{ fontSize: '11px', color: 'var(--muted)', letterSpacing: '0.1em', paddingLeft: '0.5rem' }}>{filtered.length} pieces</span>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', overflowX: 'auto', paddingBottom: '0.5rem' }} className="no-scrollbar">
             {dynamicCategories.map((cat: string) => (
               <motion.button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 style={{
                   padding: '0.4rem 1.1rem',
                   fontSize: '10px',
@@ -94,55 +148,43 @@ export default function ShopClient({ products }: { products: any[] }) {
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   transition: 'all 0.2s',
-                  borderColor: activeCategory === cat ? '#9B5DE5' : '#2a2133',
-                  color: activeCategory === cat ? '#C77DFF' : '#7A6B8A',
-                  background: activeCategory === cat ? 'rgba(155,93,229,0.1)' : 'transparent',
+                  borderColor: activeCategory === cat ? 'var(--accent)' : 'var(--border)',
+                  color: activeCategory === cat ? 'var(--accent)' : 'var(--muted)',
+                  background: activeCategory === cat ? 'var(--accent-soft)' : 'transparent',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 {cat}
               </motion.button>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {(['grid', 'list'] as const).map(v => (
-              <motion.button
-                key={v}
-                onClick={() => setView(v)}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  width: 32, height: 32,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '1px solid',
-                  cursor: 'pointer',
-                  borderColor: view === v ? '#9B5DE5' : '#2a2133',
-                  color: view === v ? '#9B5DE5' : '#7A6B8A',
-                  background: view === v ? 'rgba(155,93,229,0.1)' : 'transparent',
-                }}
-              >
-                {v === 'grid'
-                  ? <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="0" y="0" width="5" height="5" /><rect x="7" y="0" width="5" height="5" /><rect x="0" y="7" width="5" height="5" /><rect x="7" y="7" width="5" height="5" /></svg>
-                  : <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="0" y="0" width="12" height="2.5" /><rect x="0" y="5" width="12" height="2.5" /><rect x="0" y="10" width="12" height="2.5" /></svg>
-                }
-              </motion.button>
-            ))}
-            <span style={{ fontSize: '11px', color: '#7A6B8A', letterSpacing: '0.1em', paddingLeft: '0.5rem' }}>{filtered.length} pieces</span>
-          </div>
         </div>
       </div>
 
       {/* Products */}
-      <section style={{ padding: '3rem 0 6rem', background: '#050407' }}>
+      <section style={{ padding: '3rem 0 6rem', background: 'var(--bg)', minHeight: '50vh' }}>
         <div className="container">
           <AnimatePresence mode="wait">
-            {view === 'grid' ? (
+            {filtered.length === 0 ? (
+               <motion.div
+                 key="empty"
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 style={{ textAlign: 'center', padding: '6rem 2rem', color: 'var(--muted)' }}
+               >
+                 <span style={{ fontSize: '3rem', opacity: 0.2, marginBottom: '1rem', display: 'block' }}>✦</span>
+                 <p style={{ fontSize: '1.2rem', fontFamily: 'var(--font-display)', color: 'var(--text)', marginBottom: '0.5rem' }}>New pieces arriving soon.</p>
+                 <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Check back later or adjust your filters.</p>
+               </motion.div>
+            ) : view === 'grid' ? (
               <motion.div
                 key={`grid-${activeCategory}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '1.5rem' }}
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}
               >
                 {filtered.map((p, i) => (
                   <motion.div
@@ -150,52 +192,64 @@ export default function ShopClient({ products }: { products: any[] }) {
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -4, borderColor: '#6B3FA0' }}
-                    style={{ background: '#130f18', border: '1px solid #2a2133', transition: 'border-color 0.3s' }}
+                    whileHover="hover"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', transition: 'border-color 0.3s' }}
                   >
                     <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden' }}>
-                      {p.image ? (
-                        <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.07 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-                          <Image
-                            src={p.image}
-                            alt={p.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 300px"
-                            style={{ objectFit: 'cover' }}
-                            loading="lazy"
-                          />
-                        </motion.div>
-                      ) : (
-                        <div style={{ width: '100%', height: '100%', background: '#1e1826', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
-                      )}
+                      {(() => {
+                        const imgRaw = p?.image
+                        const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(800).quality(80).url()) : undefined
+                        const imgSecRaw = p?.secondaryImage
+                        const imageSecSrc = imgSecRaw ? (typeof imgSecRaw === 'string' ? imgSecRaw : urlFor(imgSecRaw).width(800).quality(80).url()) : undefined
+
+                        return imageSrc ? (
+                          <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }} initial="rest" animate="rest" transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+                            <Image
+                              src={imageSrc}
+                              alt={p?.name || 'Product'}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 300px"
+                              style={{ objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }}
+                              loading="lazy"
+                            />
+                            {imageSecSrc && (
+                              <motion.div variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                                 <Image src={imageSecSrc} alt={`${p?.name || 'Product'} alternate`} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span></div>
+                        )
+                      })()}
                       {p.category && p.category !== 'Other' && (
-                        <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', padding: '0.25rem 0.7rem', background: 'rgba(45,27,105,0.85)', border: '1px solid rgba(155,93,229,0.3)', fontSize: '8px', letterSpacing: '0.2em', color: '#C77DFF', textTransform: 'uppercase' }}>
+                        <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', padding: '0.35rem 0.8rem', background: 'var(--accent-soft)', border: '1px solid var(--border)', fontSize: '9px', letterSpacing: '0.2em', color: 'var(--accent)', textTransform: 'uppercase', zIndex: 5 }}>
                           {p.category}
                         </div>
                       )}
                     </div>
                     <div style={{ padding: '1.5rem' }}>
                       <Link href={`/product/${p.slug}`} style={{ display: 'block' }}>
-                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 400, marginBottom: '0.5rem', color: '#F0EBF8' }}>{p.name}</h3>
-                        <p style={{ fontSize: '12px', color: '#7A6B8A', lineHeight: 1.7, marginBottom: '1.25rem' }}>{p.desc}</p>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 400, marginBottom: '0.5rem', color: 'var(--text)' }}>{p.name}</h3>
+                        <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7, marginBottom: '1.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.desc || 'Moirai exclusive piece'}</p>
                       </Link>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '11px', color: '#9B5DE5', letterSpacing: '0.05em' }}>{p.price}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--accent)', letterSpacing: '0.05em' }}>{p.price ? formatPrice(p.price) : 'Contact Us'}</span>
                         <motion.a
                           href={waEnquire(p.name)}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
-                            padding: '0.5rem 1.1rem',
-                            border: '1px solid #9B5DE5',
-                            color: '#C77DFF',
-                            fontSize: '9px',
+                            padding: '0.6rem 1.25rem',
+                            border: '1px solid var(--accent)',
+                            color: 'var(--accent)',
+                            fontSize: '10px',
                             letterSpacing: '0.2em',
                             textTransform: 'uppercase',
                             cursor: 'pointer',
                             display: 'inline-block',
                           }}
-                          whileHover={{ backgroundColor: 'rgba(107,63,160,0.25)', scale: 1.04 }}
+                          whileHover={{ backgroundColor: 'var(--accent-soft)', scale: 1.03 }}
                           whileTap={{ scale: 0.97 }}
                           transition={{ duration: 0.2 }}
                         >
@@ -221,39 +275,43 @@ export default function ShopClient({ products }: { products: any[] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.45, delay: i * 0.05, ease: 'easeOut' }}
                     whileHover={{ paddingLeft: '1rem' }}
-                    style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto', gap: '1.5rem', alignItems: 'center', borderBottom: '1px solid #2a2133', padding: '1.5rem 0', transition: 'padding 0.2s' }}
+                    style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '2rem', alignItems: 'center', borderBottom: '1px solid var(--border)', padding: '1.5rem 0', transition: 'padding 0.2s' }}
                   >
-                    <div style={{ aspectRatio: '3/4', background: '#1e1826', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #2a2133', overflow: 'hidden', position: 'relative' }}>
-                      {p.image ? (
-                        <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.08 }} transition={{ duration: 0.5 }}>
-                          <Image
-                            src={p.image}
-                            alt={p.name}
-                            fill
-                            sizes="100px"
-                            style={{ objectFit: 'cover' }}
-                            loading="lazy"
-                          />
-                        </motion.div>
-                      ) : (
-                        <span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span>
-                      )}
+                    <div style={{ aspectRatio: '3/4', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', overflow: 'hidden', position: 'relative' }}>
+                      {(() => {
+                        const imgRaw = p?.image
+                        const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(800).quality(80).url()) : undefined
+                        return imageSrc ? (
+                          <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.06 }} transition={{ duration: 0.5 }}>
+                            <Image
+                              src={imageSrc}
+                              alt={p?.name || 'Product'}
+                              fill
+                              sizes="120px"
+                              style={{ objectFit: 'cover' }}
+                              loading="lazy"
+                            />
+                          </motion.div>
+                        ) : (
+                          <span style={{ fontSize: '2rem', opacity: 0.1 }}>✦</span>
+                        )
+                      })()}
                     </div>
                     <div>
                       <Link href={`/product/${p.slug}`} style={{ display: 'block' }}>
-                        {p.category && p.category !== 'Other' && <p style={{ fontSize: '9px', letterSpacing: '0.2em', color: '#9B5DE5', textTransform: 'uppercase', marginBottom: '0.35rem' }}>{p.category}</p>}
-                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 400, color: '#F0EBF8', marginBottom: '0.5rem' }}>{p.name}</h3>
-                        <p style={{ fontSize: '12px', color: '#7A6B8A', lineHeight: 1.7 }}>{p.desc}</p>
+                        {p.category && p.category !== 'Other' && <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>{p.category}</p>}
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 400, color: 'var(--text)', marginBottom: '0.5rem' }}>{p.name}</h3>
+                        <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.desc || 'Moirai exclusive piece'}</p>
                       </Link>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <p style={{ fontSize: '11px', color: '#9B5DE5', marginBottom: '0.75rem' }}>{p.price}</p>
+                      <p style={{ fontSize: '12px', color: 'var(--accent)', marginBottom: '1rem' }}>{p.price ? formatPrice(p.price) : 'Contact Us'}</p>
                       <motion.a
                         href={waEnquire(p.name)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: '9px', padding: '0.45rem 1rem', display: 'inline-block', border: '1px solid #9B5DE5', color: '#9B5DE5' }}
-                        whileHover={{ scale: 1.04, background: 'rgba(155,93,229,0.1)' }}
+                        style={{ fontSize: '10px', padding: '0.6rem 1.25rem', display: 'inline-block', border: '1px solid var(--accent)', color: 'var(--accent)' }}
+                        whileHover={{ scale: 1.03, background: 'var(--accent-soft)' }}
                         whileTap={{ scale: 0.97 }}
                       >Order</motion.a>
                     </div>
@@ -265,58 +323,13 @@ export default function ShopClient({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* Bespoke CTA */}
-      <section style={{ padding: '5rem 2rem', textAlign: 'center', background: 'linear-gradient(135deg, #0d0b10, #1e1826)', borderTop: '1px solid #2a2133', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(107,63,160,0.1) 0%, transparent 65%)', pointerEvents: 'none' }} />
-        <motion.div
-          style={{ maxWidth: 600, margin: '0 auto', position: 'relative', zIndex: 1 }}
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-        >
-          <motion.p className="section-label" variants={staggerFadeUp}>Can't Find What You're Looking For?</motion.p>
-          <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', fontStyle: 'italic', marginBottom: '1.5rem' }}>We Create Custom Pieces.</motion.h2>
-          <motion.p variants={staggerFadeUp} style={{ color: '#B8A9C9', fontSize: '13px', lineHeight: 2, marginBottom: '2.5rem' }}>
-            Our bespoke service means we can create any piece from scratch — tailored to your body, your vision, and your destiny.
-          </motion.p>
-          <motion.div variants={staggerFadeUp} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
-            <a href={`https://wa.me/${WA}?text=${encodeURIComponent("Hi! I'd like to discuss a custom bespoke piece with Moirai.")}`} target="_blank" rel="noopener noreferrer" className="btn-primary">
-              Start a Bespoke Order
-            </a>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Payment + delivery info */}
-      <div style={{ background: '#0d0b10', borderTop: '1px solid #2a2133', padding: '2.5rem 2rem' }}>
-        <motion.div
-          style={{ maxWidth: 800, margin: '0 auto', display: 'flex', gap: '3rem', justifyContent: 'center', flexWrap: 'wrap' }}
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-        >
-          {[
-            { icon: '💜', label: 'Payment via MoMo', sub: 'Mobile Money accepted' },
-            { icon: '✦', label: 'Made to Order', sub: 'Every piece crafted fresh' },
-            { icon: '📦', label: 'Delivery Available', sub: 'Cameroon + international on request' },
-          ].map(f => (
-            <motion.div key={f.label} variants={staggerFadeUp} style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>{f.icon}</p>
-              <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#C77DFF', textTransform: 'uppercase', marginBottom: '0.25rem' }}>{f.label}</p>
-              <p style={{ fontSize: '11px', color: '#7A6B8A' }}>{f.sub}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Back to collections */}
-      <div style={{ background: '#050407', borderTop: '1px solid #2a2133', padding: '1.5rem 2rem', textAlign: 'center' }}>
-        <motion.div whileHover={{ x: -4 }} transition={{ duration: 0.2 }} style={{ display: 'inline-block' }}>
-          <Link href="/collections" style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#7A6B8A', textTransform: 'uppercase' }}>← Back to Collections</Link>
-        </motion.div>
-      </div>
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (max-width: 768px) {
+           .sticky-bar { top: 60px !important; }
+        }
+      `}</style>
     </div>
   )
 }

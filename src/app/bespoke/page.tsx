@@ -17,7 +17,7 @@ export default async function BespokePage() {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const gallery = settings?.bespokeGallery?.map((item: any) => ({
-    url: item.image ? urlFor(item.image).url() : '',
+    url: item.image ? urlFor(item.image).url() : undefined,
     alt: item.alt || '',
   })).filter((i: any) => i.url) || []
 

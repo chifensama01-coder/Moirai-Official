@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
-import { urlFor } from '@/lib/sanity'
+import { urlFor } from '@/sanity/lib/image'
 
 interface BlogClientProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,19 +15,23 @@ export default function BlogClient({ posts, blogHeroImage }: BlogClientProps) {
   return (
     <div style={{ paddingTop: '5rem' }}>
       {/* Header */}
-      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: '#0d0b10', borderBottom: '1px solid #2a2133', position: 'relative', overflow: 'hidden', minHeight: '40vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        {blogHeroImage && (
-          <Image
-            src={blogHeroImage}
-            alt="Blog Hero"
-            fill
-            sizes="100vw"
-            style={{ objectFit: 'cover', opacity: 0.3 }}
-            priority
-          />
-        )}
+      <section style={{ padding: '5rem 2rem 4rem', textAlign: 'center', background: 'var(--bg)', borderBottom: '1px solid var(--border)', position: 'relative', overflow: 'hidden', minHeight: '40vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {(() => {
+          const imgRaw = blogHeroImage
+          const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(1200).quality(80).url()) : undefined
+          return imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt="Blog Hero"
+              fill
+              sizes="100vw"
+              style={{ objectFit: 'cover', opacity: 0.3 }}
+              priority
+            />
+          ) : null
+        })()}
         {!blogHeroImage && (
-           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(107,63,160,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(124, 58, 237, 0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
         )}
         <motion.div
           style={{ position: 'relative', zIndex: 1 }}
@@ -38,15 +42,15 @@ export default function BlogClient({ posts, blogHeroImage }: BlogClientProps) {
           <motion.p className="section-label" variants={staggerFadeUp}>Stories &amp; Style</motion.p>
           <motion.h1
             variants={staggerFadeUp}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem,8vw,6rem)', fontWeight: 700, marginBottom: '1rem', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 50%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem,8vw,6rem)', fontWeight: 700, marginBottom: '1rem', color: 'var(--text)' }}
           >The Journal</motion.h1>
           <motion.div className="divider" variants={staggerFadeUp} />
         </motion.div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ background: 'var(--bg)' }}>
         <div className="container" style={{ maxWidth: 900, margin: '0 auto' }}>
-          {posts.length > 0 ? (
+          {posts && posts.length > 0 ? (
             posts.map((post, i) => (
               <motion.div
                 key={post._id}
@@ -57,39 +61,43 @@ export default function BlogClient({ posts, blogHeroImage }: BlogClientProps) {
               >
                 <Link href={`/blog/${post.slug?.current}`} style={{ display: 'block' }}>
                   <motion.article
-                    style={{ display: 'grid', gridTemplateColumns: post.mainImage ? '1fr 200px' : '1fr', gap: '2rem', alignItems: 'center', borderBottom: '1px solid #2a2133', padding: '3rem 0' }}
+                    style={{ display: 'grid', gridTemplateColumns: post.mainImage ? '1fr 200px' : '1fr', gap: '2rem', alignItems: 'center', borderBottom: '1px solid var(--border)', padding: '3rem 0' }}
                     whileHover={{ paddingLeft: '1.25rem' }}
                     transition={{ duration: 0.25 }}
                   >
                     <div>
-                      <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#9B5DE5', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
                         {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                       </p>
                       <motion.h2
-                        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.3rem,3vw,2rem)', fontWeight: 400, color: '#F0EBF8', marginBottom: '0.75rem' }}
-                        whileHover={{ color: '#C77DFF' }}
+                        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.3rem,3vw,2rem)', fontWeight: 400, color: 'var(--text)', marginBottom: '0.75rem' }}
+                        whileHover={{ color: 'var(--accent)' }}
                         transition={{ duration: 0.2 }}
                       >{post.title}</motion.h2>
-                      {post.excerpt && <p style={{ color: '#7A6B8A', fontSize: '13px', lineHeight: 1.8 }}>{post.excerpt}</p>}
-                      <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#9B5DE5', textTransform: 'uppercase', marginTop: '1rem' }}>Read More →</p>
+                      {post.excerpt && <p style={{ color: 'var(--muted)', fontSize: '13px', lineHeight: 1.8 }}>{post.excerpt}</p>}
+                      <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: 'var(--accent)', textTransform: 'uppercase', marginTop: '1rem' }}>Read More →</p>
                     </div>
-                    {post.mainImage && (
-                      <div style={{ aspectRatio: '4/3', overflow: 'hidden', border: '1px solid #2a2133', position: 'relative' }}>
-                        <motion.div
-                          style={{ width: '100%', height: '100%', position: 'relative' }}
-                          whileHover={{ scale: 1.07 }}
-                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        >
-                           <Image src={urlFor(post.mainImage).width(400).quality(80).url()} alt={post.title} fill sizes="200px" style={{ objectFit: 'cover' }} loading="lazy" />
-                        </motion.div>
-                      </div>
-                    )}
+                    {(() => {
+                        const imgRaw = post?.mainImage
+                        const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(800).quality(80).url()) : undefined
+                        return imageSrc ? (
+                          <div style={{ aspectRatio: '4/3', overflow: 'hidden', border: '1px solid var(--border)', position: 'relative' }}>
+                            <motion.div
+                              style={{ width: '100%', height: '100%', position: 'relative' }}
+                              whileHover={{ scale: 1.04 }}
+                              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                               <Image src={imageSrc} alt={post?.title || 'Blog Post'} fill sizes="200px" style={{ objectFit: 'cover' }} loading="lazy" />
+                            </motion.div>
+                          </div>
+                        ) : null
+                    })()}
                   </motion.article>
                 </Link>
               </motion.div>
             ))
           ) : (
-            <p style={{ color: '#7A6B8A', fontSize: '13px', textAlign: 'center', padding: '5rem 0' }}>
+            <p style={{ color: 'var(--muted)', fontSize: '13px', textAlign: 'center', padding: '5rem 0' }}>
               No journal entries found. Check back soon.
             </p>
           )}

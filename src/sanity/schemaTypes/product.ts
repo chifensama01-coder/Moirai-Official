@@ -23,19 +23,12 @@ const product = {
         {
             name: 'category',
             title: 'Category',
-            type: 'string',
-            options: {
-                list: [
-                    { title: 'Bespoke', value: 'Bespoke' },
-                    { title: 'Corsets', value: 'Corsets' },
-                    { title: 'Cocktail Dresses', value: 'Cocktail Dresses' },
-                    { title: 'Cameroonian Traditional', value: 'Cameroonian Traditional' }
-                ],
-            }
+            type: 'reference',
+            to: [{ type: 'category' }]
         },
         {
             name: 'price',
-            title: 'Price',
+            title: 'Price (XAF)',
             type: 'number',
         },
         {
@@ -54,6 +47,30 @@ const product = {
             title: 'Product Images',
             type: 'array',
             of: [{ type: 'image', options: { hotspot: true } }]
+        },
+        {
+            name: 'sizeGuide',
+            title: 'Size Guide',
+            type: 'array',
+            of: [{ type: 'block' }]
+        },
+        {
+            name: 'fabricDetails',
+            title: 'Fabric Details',
+            type: 'array',
+            of: [{ type: 'block' }]
+        },
+        {
+            name: 'deliveryInfo',
+            title: 'Delivery Info',
+            type: 'array',
+            of: [{ type: 'block' }]
+        },
+        {
+            name: 'relatedProducts',
+            title: 'Related Products (You May Also Like)',
+            type: 'array',
+            of: [{ type: 'reference', to: [{ type: 'product' }] }]
         },
     ],
 }

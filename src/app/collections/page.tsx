@@ -3,8 +3,6 @@ import CollectionsClient from '@/components/CollectionsClient'
 
 export const revalidate = 60
 
-const CATEGORY_LIST = ['Bespoke', 'Corsets', 'Cocktail Dresses', 'Cameroonian Traditional']
-
 export default async function CollectionsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let products: any[] = []
@@ -36,7 +34,7 @@ export default async function CollectionsPage() {
   const grouped: Record<string, typeof productsWithUrls> = {}
   collections.forEach((c: any) => { grouped[c.title] = [] })
   productsWithUrls.forEach(p => {
-    const cat = p.collection?.title
+    const cat = p.category?.title
     if (cat && grouped[cat]) grouped[cat].push(p)
   })
 

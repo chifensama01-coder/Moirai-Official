@@ -20,8 +20,14 @@ export default async function ProductPage({ params }: PageProps) {
        price,
        image,
        images,
-       category,
-       description
+       category->{title},
+       description,
+       sizeGuide,
+       fabricDetails,
+       deliveryInfo,
+       relatedProducts[]->{
+         _id, title, slug, price, image
+       }
     }`, { slug })
   } catch {
     //
@@ -34,11 +40,19 @@ export default async function ProductPage({ params }: PageProps) {
   const parsedProduct = {
     id: product._id,
     name: product.title || 'Product',
-    price: product.price ? `$${product.price}` : 'Price on request',
+    price: product.price || 0,
     desc: product.description || '',
-    category: product.category || 'Other',
+    category: product.category?.title || 'Other',
     image: product.image ? urlFor(product.image).url() : null,
-    images: Array.isArray(product.images) ? product.images.map((img: any) => urlFor(img).url()) : [],
+    images: Array.isArray(product.images) ? product.images.map((img: any) => img ? urlFor(img).url() : null).filter(Boolean) : [],
+    sizeGuide: product.sizeGuide,
+    fabricDetails: product.fabricDetails,
+    deliveryInfo: product.deliveryInfo,
+    relatedProducts: Array.isArray(product.relatedProducts) ? product.relatedProducts.filter(Boolean).map((rel: any) => ({
+      ...rel,
+      image: rel.image ? urlFor(rel.image).url() : null
+    })) : [],
+    slug
   }
 
   return <ProductDetailClient product={parsedProduct} />

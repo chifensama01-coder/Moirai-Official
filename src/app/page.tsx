@@ -39,22 +39,24 @@ export default async function HomePage() {
   const collections = settings?.collections?.map((c: any) => ({
     title: c.title,
     slug: c.slug || c.title?.toLowerCase().replace(/ /g, '-'),
-    image: c.image ? urlFor(c.image).url() : '',
+    image: c.image ? urlFor(c.image).url() : undefined,
   })).filter((c: any) => c.image || c.title) || []
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const heroSlides = settings?.heroSlides?.map((s: any) => ({
     title: s.title,
     subtitle: s.subtitle,
-    image: s.image ? urlFor(s.image).width(1600).quality(90).url() : '',
+    image: s.image ? urlFor(s.image).width(1600).quality(90).url() : undefined,
   })) || []
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lookbook = settings?.lookbook?.map((l: any) => ({
     title: l.title,
     description: l.description,
-    image: l.image ? urlFor(l.image).width(800).quality(85).url() : '',
+    date: l.date,
+    images: Array.isArray(l.images) ? l.images.map((img: any) => urlFor(img).width(800).quality(85).url()) : [],
   })) || []
+
+  const bespokeHeroImage = settings?.bespokeHeroImage ? urlFor(settings.bespokeHeroImage).width(1200).quality(90).url() : undefined
 
   return (
     <HomeClient
@@ -67,6 +69,7 @@ export default async function HomePage() {
       heroText={heroText}
       heroSlides={heroSlides}
       lookbook={lookbook}
+      bespokeHeroImage={bespokeHeroImage}
     />
   )
 }

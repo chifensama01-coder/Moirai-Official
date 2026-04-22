@@ -17,7 +17,7 @@ export const featuredProductsQuery = `*[_type == "product" && featured == true] 
 }`
 
 export const allProductsQuery = `*[_type == "product"] | order(_createdAt desc) {
-  _id, name, slug, price, image, available, description, collection->{ title }
+  _id, name, slug, price, image, available, description, category->{ title }
 }`
 
 export const featuredCollectionsQuery = `*[_type == "collection" && featured == true] | order(_createdAt desc)[0...3] {

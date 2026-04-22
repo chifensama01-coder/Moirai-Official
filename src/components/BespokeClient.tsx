@@ -1,8 +1,10 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { staggerContainer, staggerFadeUp } from '@/lib/animations'
+import { urlFor } from '@/sanity/lib/image'
 
 const PROCESS = [
   { num: '01', title: 'Consultation', desc: 'We start with a conversation. Your vision, your measurements, your story. Every detail matters. Done via WhatsApp or in person.' },
@@ -42,15 +44,22 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
   return (
     <div style={{ paddingTop: '5rem' }}>
       {/* Hero */}
-      <section style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '9rem 2rem', background: 'linear-gradient(170deg, #0d0b10, #1e1826)', position: 'relative', overflow: 'hidden' }}>
-        {heroImage && (
-          <img 
-            src={heroImage} 
-            alt="Bespoke Hero" 
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3, mixBlendMode: 'overlay', pointerEvents: 'none' }} 
-          />
-        )}
-        <div className="luxury-glow" />
+      <section style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '9rem 2rem', background: 'linear-gradient(170deg, var(--bg), var(--bg))', position: 'relative', overflow: 'hidden' }}>
+        {(() => {
+          const imgRaw = heroImage
+          const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(1200).quality(80).url()) : null
+          return imageSrc ? (
+            <Image 
+              src={imageSrc} 
+              alt="Bespoke Hero"
+              fill
+              sizes="100vw"
+              priority 
+              style={{ objectFit: 'cover', opacity: 0.3, mixBlendMode: 'overlay' }} 
+            />
+          ) : null
+        })()}
+        {!heroImage && <div className="luxury-glow" />}
         <motion.div
           style={{ maxWidth: 700, position: 'relative', zIndex: 1 }}
           variants={staggerContainer}
@@ -60,12 +69,12 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
           <motion.p className="section-label" variants={staggerFadeUp}>Couture &amp; Custom</motion.p>
           <motion.h1
             variants={staggerFadeUp}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem,9vw,7rem)', fontWeight: 700, marginBottom: '1.5rem', background: 'linear-gradient(135deg, #FAFAFA 0%, #E0AAFF 50%, #9B5DE5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem,9vw,7rem)', fontWeight: 700, marginBottom: '1.5rem', background: 'linear-gradient(135deg, var(--text) 0%, var(--accent-soft) 50%, var(--accent) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >Bespoke.</motion.h1>
           <motion.div className="divider" style={{ marginBottom: '2rem' }} variants={staggerFadeUp} />
           <motion.p
             variants={staggerFadeUp}
-            style={{ color: '#B8A9C9', fontSize: '14px', lineHeight: 2, marginBottom: '3rem', maxWidth: 520, margin: '0 auto 3rem' }}
+            style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 2, marginBottom: '3rem', maxWidth: 520, margin: '0 auto 3rem' }}
           >
             Your identity, tailored to perfection. A bespoke piece from Moirai is not just clothing — it is a statement of who you are becoming.
           </motion.p>
@@ -101,24 +110,24 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
                 variants={staggerFadeUp}
                 style={{
                   padding: '3rem 2.5rem',
-                  border: '1px solid rgba(155,93,229,0.1)',
+                  border: '1px solid rgba(168, 85, 247, 0.1)',
                   marginLeft: i === 0 ? 0 : '-1px',
                   position: 'relative',
-                  background: 'rgba(13,11,16,0.5)',
+                  background: 'var(--bg)',
                   transition: 'background 0.3s, box-shadow 0.3s',
                 }}
-                whileHover={{ background: 'rgba(26,20,35,0.8)', boxShadow: '0 0 20px rgba(107,63,160,0.1)' }}
+                whileHover={{ background: 'rgba(26,20,35,0.8)', boxShadow: '0 0 20px rgba(124, 58, 237, 0.1)' }}
               >
                 <motion.div
-                  style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, #2D1B69, #9B5DE5)', originX: 0 }}
+                  style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, var(--accent-soft), var(--accent))', originX: 0 }}
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
                 />
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '3.5rem', fontWeight: 700, color: 'rgba(255,255,255,0.05)', lineHeight: 1, marginBottom: '1.5rem' }}>{step.num}</p>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', color: '#E0AAFF', marginBottom: '0.75rem' }}>{step.title}</p>
-                <p style={{ color: '#7A6B8A', fontSize: '12px', lineHeight: 1.9 }}>{step.desc}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', color: 'var(--accent-soft)', marginBottom: '0.75rem' }}>{step.title}</p>
+                <p style={{ color: 'var(--muted)', fontSize: '12px', lineHeight: 1.9 }}>{step.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -126,8 +135,8 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
       </section>
 
       {/* Gallery */}
-      <section className="section" style={{ background: '#0d0b10', position: 'relative' }}>
-         <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '100%', height: '80%', background: 'radial-gradient(ellipse at center, rgba(107,63,160,0.06) 0%, transparent 65%)', pointerEvents: 'none' }} />
+      <section className="section" style={{ background: 'var(--bg)', position: 'relative' }}>
+         <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '100%', height: '80%', background: 'radial-gradient(ellipse at center, rgba(124, 58, 237, 0.06) 0%, transparent 65%)', pointerEvents: 'none' }} />
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <motion.div
             style={{ textAlign: 'center', marginBottom: '3rem' }}
@@ -152,29 +161,37 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
                 variants={staggerFadeUp}
                 style={{ aspectRatio: i % 3 === 0 ? '2/3' : '3/4', border: '1px solid rgba(255,255,255,0.1)', position: 'relative', overflow: 'hidden' }}
               >
-                <motion.img
-                  src={item.url}
-                  alt={item.alt || "Bespoke piece"}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                <motion.div
+                  style={{ width: '100%', height: '100%', position: 'relative' }}
                   whileHover={{ scale: 1.07 }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                />
+                >
+                  {(() => {
+                    const imgRaw = item?.url
+                    const imageSrc = imgRaw ? (typeof imgRaw === 'string' ? imgRaw : urlFor(imgRaw).width(800).quality(80).url()) : null
+                    return imageSrc ? (
+                      <Image src={imageSrc} alt={item?.alt || "Bespoke piece"} fill sizes="(max-width: 768px) 50vw, 300px" style={{ objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.2)' }} />
+                    )
+                  })()}
+                </motion.div>
               </motion.div>
             )) : (
-              <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: '#7A6B8A', border: '1px dashed rgba(255,255,255,0.05)', background: 'rgba(13,11,16,0.3)' }}>
+              <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: 'var(--muted)', border: '1px dashed rgba(255,255,255,0.05)', background: 'var(--bg)' }}>
                  <p style={{ fontSize: '1.5rem', opacity: 0.3, marginBottom: '0.5rem' }}>✧</p>
                  <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Curating the Lookbook</p>
               </div>
             )}
           </motion.div>
-          <p style={{ textAlign: 'center', marginTop: '3rem', fontSize: '12px', color: '#7A6B8A' }}>
-            Follow <a href="https://instagram.com/Moirai.th" target="_blank" rel="noopener noreferrer" style={{ color: '#9B5DE5' }}>@Moirai.th</a> on Instagram to see real pieces in the meantime.
+          <p style={{ textAlign: 'center', marginTop: '3rem', fontSize: '12px', color: 'var(--muted)' }}>
+            Follow <a href="https://instagram.com/Moirai.th" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>@Moirai.th</a> on Instagram to see real pieces in the meantime.
           </p>
         </div>
       </section>
 
       {/* Request Custom Design Form */}
-      <section className="section" id="contact-design" style={{ background: '#050407', position: 'relative' }}>
+      <section className="section" id="contact-design" style={{ background: 'var(--bg)', position: 'relative' }}>
         <div className="container" style={{ maxWidth: 700, margin: '0 auto' }}>
           <motion.div
             style={{ textAlign: 'center', marginBottom: '3rem' }}
@@ -185,7 +202,7 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
           >
             <motion.p className="section-label" variants={staggerFadeUp}>Start Designing</motion.p>
             <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)', marginBottom: '1rem' }}>Request Custom Design</motion.h2>
-            <motion.p variants={staggerFadeUp} style={{ color: '#B8A9C9', fontSize: '14px', lineHeight: 1.8 }}>Describe your vision, and our artisans will bring it to life. Submit the form to coordinate directly with our atelier.</motion.p>
+            <motion.p variants={staggerFadeUp} style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.8 }}>Describe your vision, and our artisans will bring it to life. Submit the form to coordinate directly with our atelier.</motion.p>
           </motion.div>
 
           <motion.form 
@@ -194,39 +211,39 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            style={{ background: '#130f18', padding: '3rem', border: '1px solid rgba(155,93,229,0.15)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}
+            style={{ background: 'var(--bg)', padding: '3rem', border: '1px solid rgba(168, 85, 247, 0.15)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}
           >
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Full Name</label>
+              <label style={{ display: 'block', fontSize: '10px', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Full Name</label>
               <input 
                 type="text" 
                 required 
                 value={formData.name}
                 onChange={e => setFormData({...formData, name: e.target.value})}
-                style={{ width: '100%', padding: '1rem', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '1rem', background: 'var(--bg)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit' }}
                 placeholder="Your Name"
               />
             </div>
             
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>WhatsApp Number</label>
+              <label style={{ display: 'block', fontSize: '10px', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>WhatsApp Number</label>
               <input 
                 type="tel" 
                 required 
                 value={formData.phone}
                 onChange={e => setFormData({...formData, phone: e.target.value})}
-                style={{ width: '100%', padding: '1rem', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '1rem', background: 'var(--bg)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit' }}
                 placeholder="+1 234 567 890"
               />
             </div>
 
             <div style={{ marginBottom: '2.5rem' }}>
-              <label style={{ display: 'block', fontSize: '10px', color: '#9B5DE5', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Your Vision</label>
+              <label style={{ display: 'block', fontSize: '10px', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Your Vision</label>
               <textarea 
                 required 
                 value={formData.desc}
                 onChange={e => setFormData({...formData, desc: e.target.value})}
-                style={{ width: '100%', padding: '1rem', minHeight: '120px', background: '#1e1826', border: '1px solid rgba(255,255,255,0.05)', color: '#F0EBF8', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '1rem', minHeight: '120px', background: 'var(--bg)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text)', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
                 placeholder="Describe the occasion, preferred fabrics, or any inspiration you have."
               />
             </div>
@@ -259,15 +276,15 @@ export default function BespokeClient({ heroImage, gallery }: BespokeClientProps
               transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
               style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2rem 0' }}
             >
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#E0AAFF', marginBottom: '0.75rem', letterSpacing: '0.04em' }}>{faq.q}</p>
-              <p style={{ color: '#B8A9C9', fontSize: '14px', lineHeight: 1.85 }}>{faq.a}</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--accent-soft)', marginBottom: '0.75rem', letterSpacing: '0.04em' }}>{faq.q}</p>
+              <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.85 }}>{faq.a}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section style={{ padding: '9rem 2rem', textAlign: 'center', background: 'linear-gradient(170deg, #130f18, #050407)', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '9rem 2rem', textAlign: 'center', background: 'linear-gradient(170deg, var(--bg), var(--bg))', position: 'relative', overflow: 'hidden' }}>
         <div className="luxury-glow" style={{ opacity: 0.5 }} />
         <motion.div
           style={{ maxWidth: 500, margin: '0 auto', position: 'relative', zIndex: 1 }}

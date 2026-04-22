@@ -28,13 +28,13 @@ interface HomeClientProps {
 
 export default function HomeClient({ products, posts, waNumber, waMsg, collections, heroImageUrl, heroText, heroSlides, lookbook, bespokeHeroImage }: HomeClientProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
-  
+
   const slides = (heroSlides && heroSlides.length > 0) ? heroSlides : [
-     {
-       image: heroImageUrl,
-       title: heroText || 'Destiny, Tailored.',
-       subtitle: 'Not a Trend. IDENTITY.'
-     }
+    {
+      image: heroImageUrl,
+      title: heroText || 'Destiny, Tailored.',
+      subtitle: 'Not a Trend. IDENTITY.'
+    }
   ]
   const renderSlides = slides.filter(s => s.image)
   const hasSlides = renderSlides && renderSlides.length > 0
@@ -56,7 +56,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
       {/* ── HERO ── */}
       {/* ── HERO ── */}
       <section className="hero-section" style={{ overflow: 'hidden', background: 'var(--bg)', position: 'relative' }}>
-        
+
         {/* Background Slider */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
           {hasSlides ? (
@@ -133,7 +133,7 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
               }}
             >
               <span style={{ display: 'block' }}>
-                 {hasSlides ? renderSlides[currentSlide]?.title : 'Destiny, Tailored.'}
+                {hasSlides ? renderSlides[currentSlide]?.title : 'Destiny, Tailored.'}
               </span>
             </motion.h1>
           </AnimatePresence>
@@ -184,12 +184,12 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
               <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" className={hasSlides ? "btn-primary" : "btn-ghost"} style={{ minHeight: '48px', display: 'flex', alignItems: 'center', background: hasSlides ? 'rgba(255,255,255,0.1)' : undefined, backdropFilter: hasSlides ? 'blur(10px)' : undefined, border: hasSlides ? '1px solid rgba(255,255,255,0.2)' : undefined, color: hasSlides ? '#ffffff' : undefined }}>Enquire Now</a>
             </motion.div>
           </motion.div>
-          
+
           {hasSlides && renderSlides.length > 1 && (
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '4rem' }}>
               {renderSlides.map((_, i) => (
-                <button 
-                  key={i} 
+                <button
+                  key={i}
                   onClick={() => setCurrentSlide(i)}
                   style={{ width: '2rem', height: '3px', background: currentSlide === i ? '#ffffff' : 'rgba(255,255,255,0.3)', transition: 'background 0.3s', minHeight: '30px' }}
                   aria-label={`Go to slide ${i + 1}`}
@@ -205,8 +205,8 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
         <div style={{ display: 'flex', gap: '3rem', animation: 'marqueeScroll 28s linear infinite', width: 'max-content' }}>
           {['Made for who you are Becoming', '✦', 'Destiny Tailored', '◆', 'Refined. Intentional. Eternal.', '◇', 'Not a Trend. IDENTITY', '✧',
             'Made for who you are Becoming', '✦', 'Destiny Tailored', '◆', 'Refined. Intentional. Eternal.', '◇', 'Not a Trend. IDENTITY', '✧'].map((t, i) => (
-            <span key={i} style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: i % 2 !== 0 ? 'var(--accent)' : 'var(--muted)', whiteSpace: 'nowrap' }}>{t}</span>
-          ))}
+              <span key={i} style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: i % 2 !== 0 ? 'var(--accent)' : 'var(--muted)', whiteSpace: 'nowrap' }}>{t}</span>
+            ))}
         </div>
       </div>
 
@@ -279,13 +279,13 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
                     {/* Image */}
                     <div style={{ width: '100%', aspectRatio: '4/3', marginBottom: '1.5rem', position: 'relative', overflow: 'hidden' }}>
                       {(() => {
-                         const catImg = cat?.image
-                         const imgSrc = catImg ? (typeof catImg === 'string' ? catImg : urlFor(catImg).width(800).quality(80).url()) : undefined
-                         return imgSrc ? (
-                           <Image src={imgSrc} alt={cat?.title || 'Category'} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
-                         ) : (
-                           <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.05)' }} />
-                         )
+                        const catImg = cat?.image
+                        const imgSrc = catImg ? (typeof catImg === 'string' ? catImg : urlFor(catImg).width(800).quality(80).url()) : undefined
+                        return imgSrc ? (
+                          <Image src={imgSrc} alt={cat?.title || 'Category'} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.05)' }} />
+                        )
                       })()}
                     </div>
                     <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--text)' }}>{cat.title}</p>
@@ -294,10 +294,10 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
                 </motion.div>
               </motion.div>
             )) : (
-               <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: 'var(--muted)', border: '1px dashed var(--border)', background: 'var(--bg)' }}>
-                 <p style={{ fontSize: '1.5rem', opacity: 0.3, marginBottom: '0.5rem' }}>✧</p>
-                 <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Curating the Collection</p>
-               </div>
+              <div style={{ padding: '4rem', gridColumn: '1 / -1', textAlign: 'center', color: 'var(--muted)', border: '1px dashed var(--border)', background: 'var(--bg)' }}>
+                <p style={{ fontSize: '1.5rem', opacity: 0.3, marginBottom: '0.5rem' }}>✧</p>
+                <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Curating the Collection</p>
+              </div>
             )}
           </motion.div>
         </div>
@@ -305,58 +305,58 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
 
       {/* ── LOOKBOOK SECTION (NEW) ── */}
       {lookbook && lookbook.length > 0 && (
-         <section className="section" style={{ background: 'var(--bg)', borderTop: '1px solid var(--border)' }}>
-            <div className="container">
-               <motion.div
-                  style={{ textAlign: 'center', marginBottom: '4rem' }}
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: '-80px' }}
-                >
-                  <motion.p className="section-label" variants={staggerFadeUp}>Inspiration</motion.p>
-                  <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>The Lookbook</motion.h2>
-               </motion.div>
-               <motion.div 
-                 style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}
-                 variants={staggerContainer}
-                 initial="hidden"
-                 whileInView="visible"
-                 viewport={{ once: true, margin: '-60px' }}
-               >
-                 {lookbook.map((lb, idx) => {
-                    const lbImg = lb?.images?.[0] || lb?.image;
-                    const imgSrc = lbImg ? (typeof lbImg === 'string' ? lbImg : urlFor(lbImg).width(1200).quality(80).url()) : undefined;
-                    return (
-                      <motion.div key={idx} variants={staggerFadeUp} style={{ position: 'relative', height: '600px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                          <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.03 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
-                             {imgSrc ? (
-                               <>
-                                 <Image src={imgSrc} alt={lb?.title || 'Lookbook'} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
-                                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', textAlign: 'center' }}>
-                                    {lb.date && <p style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{lb.date}</p>}
-                                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: '#ffffff', marginBottom: '0.5rem' }}>{lb.title}</h3>
-                                    {lb.description && <p style={{ fontSize: '13px', color: '#e5e7eb', lineHeight: 1.7, maxWidth: '80%' }}>{lb.description}</p>}
-                                 </div>
-                               </>
-                             ) : (
-                               <>
-                                 <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--bg)' }} />
-                                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%)', pointerEvents: 'none' }} />
-                                 <div style={{ position: 'absolute', inset: 0, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                                    {lb.date && <p style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{lb.date}</p>}
-                                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: 'var(--text)', marginBottom: '0.5rem' }}>{lb.title}</h3>
-                                    {lb.description && <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '80%' }}>{lb.description}</p>}
-                                 </div>
-                               </>
-                             )}
-                          </motion.div>
-                      </motion.div>
-                    )
-                 })}
-               </motion.div>
-            </div>
-         </section>
+        <section className="section" style={{ background: 'var(--bg)', borderTop: '1px solid var(--border)' }}>
+          <div className="container">
+            <motion.div
+              style={{ textAlign: 'center', marginBottom: '4rem' }}
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+            >
+              <motion.p className="section-label" variants={staggerFadeUp}>Inspiration</motion.p>
+              <motion.h2 variants={staggerFadeUp} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4vw,3rem)' }}>The Lookbook</motion.h2>
+            </motion.div>
+            <motion.div
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+            >
+              {lookbook.map((lb, idx) => {
+                const lbImg = lb?.images?.[0] || lb?.image;
+                const imgSrc = lbImg ? (typeof lbImg === 'string' ? lbImg : urlFor(lbImg).width(1200).quality(80).url()) : undefined;
+                return (
+                  <motion.div key={idx} variants={staggerFadeUp} style={{ position: 'relative', height: '600px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                    <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} whileHover={{ scale: 1.03 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
+                      {imgSrc ? (
+                        <>
+                          <Image src={imgSrc} alt={lb?.title || 'Lookbook'} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', textAlign: 'center' }}>
+                            {lb.date && <p style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{lb.date}</p>}
+                            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: '#ffffff', marginBottom: '0.5rem' }}>{lb.title}</h3>
+                            {lb.description && <p style={{ fontSize: '13px', color: '#e5e7eb', lineHeight: 1.7, maxWidth: '80%' }}>{lb.description}</p>}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--bg)' }} />
+                          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%)', pointerEvents: 'none' }} />
+                          <div style={{ position: 'absolute', inset: 0, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                            {lb.date && <p style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{lb.date}</p>}
+                            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: 'var(--text)', marginBottom: '0.5rem' }}>{lb.title}</h3>
+                            {lb.description && <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '80%' }}>{lb.description}</p>}
+                          </div>
+                        </>
+                      )}
+                    </motion.div>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          </div>
+        </section>
       )}
 
       {/* ── FEATURED PRODUCTS (from Sanity) ── */}
@@ -403,12 +403,12 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
                         if (imgPrimary) {
                           return (
                             <motion.div style={{ width: '100%', height: '100%', position: 'relative' }} variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-                               <Image src={imgPrimary} alt={p?.name || 'Product'} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }} loading="lazy" />
-                               {imgSecondary && (
-                                  <motion.div variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
-                                     <Image src={imgSecondary} alt={`${p?.name || 'Product'} alternate`} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
-                                  </motion.div>
-                               )}
+                              <Image src={imgPrimary} alt={p?.name || 'Product'} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }} loading="lazy" />
+                              {imgSecondary && (
+                                <motion.div variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                                  <Image src={imgSecondary} alt={`${p?.name || 'Product'} alternate`} fill sizes="(max-width: 768px) 100vw, 300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                                </motion.div>
+                              )}
                             </motion.div>
                           )
                         } else {
@@ -451,11 +451,11 @@ export default function HomeClient({ products, posts, waNumber, waMsg, collectio
             style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400, borderRight: '1px solid var(--border)' }}
           >
             {bespokeHeroImage ? (
-               <Image src={bespokeHeroImage} alt="Bespoke Couture" fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
+              <Image src={bespokeHeroImage} alt="Bespoke Couture" fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
             ) : (
-               <div style={{ position: 'absolute', inset: 0, background: 'var(--accent-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '3rem', opacity: 0.2, color: 'var(--accent)' }}>✦</span>
-               </div>
+              <div style={{ position: 'absolute', inset: 0, background: 'var(--accent-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '3rem', opacity: 0.2, color: 'var(--accent)' }}>✦</span>
+              </div>
             )}
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 50%, var(--bg))', opacity: 0.4 }} />
           </motion.div>
